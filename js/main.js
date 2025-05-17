@@ -1,34 +1,34 @@
-const SHEET_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_z4_nPfXouAPBrb5eP2u5JqNXsg1aQedaRk25l36isMLJy21nPlxeKE1GvOX75MFp5sCLXjc6BegJ/pub?output=csv";
+import './components/ThemeMode.js';
+import './components/Search.js';
+import './components/Table.js';
+import './components/Accordion.js';
+import './components/PlayersList.js';
+import './components/SwitchView.js';
+import { VIEWS } from './components/SwitchView.js';
+import { getRanking } from './services/rankingService.js';
 
-let playersList = [];
-let $container = document.querySelector(".container");
+let ranking = [];
+const $container = document.querySelector('.container');
 let $tableComponent;
-let $playersListComponent;
-let $switchViewComponent;
-let $searchComponent;
+let $playersListComponent = document.querySelector('app-players-list');
+const $lastUpdateElement = document.querySelector('.last-update');
+const $switchViewComponent = document.querySelector('app-switch-view');
+const $searchComponent = document.querySelector('app-search');
 
 // Theme switching functionality
 function initTheme() {
-  console.log("Initializing theme...");
-  const themeMode = document.querySelector("app-theme-mode");
+  console.log('Initializing theme...');
+  const themeMode = document.querySelector('app-theme-mode');
   themeMode.initTheme();
 }
 
-function getSearchTerm() {
-  // Get search term from URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const searchTerm = urlParams.get("search");
-  return searchTerm;
-}
-
 function handleChangeView(view) {
-  const existingTable = $container.querySelector("app-table");
-  const existingList = $container.querySelector("app-players-list");
+  const existingTable = $container.querySelector('app-table');
+  const existingList = $container.querySelector('app-players-list');
 
-  const searchTerm = getSearchTerm();
+  const searchTerm = $searchComponent.getSearchTerm();
 
-  if (view === "table") {
+  if (view === VIEWS.TABLE) {
     // Remove list if exists
     if (existingList) {
       existingList.remove();
@@ -36,11 +36,11 @@ function handleChangeView(view) {
 
     // Create and initialize table if it doesn't exist
     if (!existingTable) {
-      $tableComponent = document.createElement("app-table");
+      $tableComponent = document.createElement('app-table');
       $tableComponent.generateTableHeaders();
-      $tableComponent.setRows(playersList);
+      $tableComponent.setRows(ranking);
       if (searchTerm) {
-        $tableComponent.filterTable(searchTerm);
+        $tableComponent.filterPlayers(searchTerm);
       }
       $container.appendChild($tableComponent);
     }
@@ -52,8 +52,8 @@ function handleChangeView(view) {
 
     // Create and initialize list if it doesn't exist
     if (!existingList) {
-      $playersListComponent = document.createElement("app-players-list");
-      $playersListComponent.setPlayers(playersList);
+      $playersListComponent = document.createElement('app-players-list');
+      $playersListComponent.setPlayers(ranking);
       if (searchTerm) {
         $playersListComponent.filterPlayers(searchTerm);
       }
@@ -63,42 +63,26 @@ function handleChangeView(view) {
 }
 
 // Function to load and parse CSV data
-async function loadCSV() {
+async function loadRanking() {
   try {
     // Show skeleton loading state for initial list view
-    $playersListComponent = document.querySelector("app-players-list");
     $playersListComponent.showSkeleton();
 
-    const response = await fetch(SHEET_URL);
-    const data = await response.text();
-    const rows = data.split("\n");
+    const { ranking: rankingData, lastUpdate } = await getRanking();
+    ranking = rankingData;
 
-    // Store all rows for filtering
-    playersList = rows.slice(1).filter((row) => row.trim());
-
-    // Get lastUpdate from first player
-    let lastUpdate = "";
-    if (playersList.length > 0) {
-      const firstPlayerColumns = playersList[0].split(",");
-      lastUpdate = firstPlayerColumns[firstPlayerColumns.length - 1];
-    }
-
-    const lastUpdateElement = document.querySelector(".last-update");
-    lastUpdateElement.textContent = `Última actualización: ${
-      lastUpdate || "No disponible"
-    }`;
+    $lastUpdateElement.textContent = `Última actualización: ${lastUpdate || 'No disponible'}`;
 
     // Get search term from URL
-    const searchTerm = getSearchTerm();
+    const searchTerm = $searchComponent.getSearchTerm();
 
     // Initialize view switching
-    $switchViewComponent = document.querySelector("app-switch-view");
-    $switchViewComponent.addEventListener("viewChange", (e) => {
+    $switchViewComponent.addEventListener('viewChange', (e) => {
       handleChangeView(e.detail.view);
     });
 
     // Initialize players list
-    $playersListComponent.setPlayers(playersList);
+    $playersListComponent.setPlayers(ranking);
 
     // If there's a search term, filter the rows
     if (searchTerm) {
@@ -106,54 +90,47 @@ async function loadCSV() {
     }
 
     // Add search event listener
-    $searchComponent = document.querySelector("app-search");
-    $searchComponent.addEventListener("search", (e) => {
-      const activeView =
-        document.querySelector("app-table") ||
-        document.querySelector("app-players-list");
-      if (activeView) {
-        activeView.filterTable?.(e.detail.searchTerm);
-        activeView.filterPlayers?.(e.detail.searchTerm);
-      }
+    $searchComponent.addEventListener('search', (e) => {
+      const activeView = $switchViewComponent.currentView === 'table' ? $tableComponent : $playersListComponent;
+      activeView.filterPlayers?.(e.detail.searchTerm);
     });
 
-    console.log("CSV data loaded successfully");
+    console.log('CSV data loaded successfully');
   } catch (error) {
-    console.error("Error loading CSV:", error);
+    console.error('Error loading CSV:', error);
   }
 }
 
 // Register Service Worker
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
     navigator.serviceWorker
-      .register("./sw.js")
-      .then((_) => {
-        console.log("ServiceWorker registration successful");
+      .register('./sw.js')
+      .then(() => {
+        console.log('ServiceWorker registration successful');
       })
       .catch((err) => {
-        console.log("ServiceWorker registration failed: ", err);
+        console.log('ServiceWorker registration failed: ', err);
       });
   });
 }
 
 // Add resize listener to handle window size changes
-window.addEventListener("resize", () => {
-  const view =
-    window.innerWidth < 1024 ? "list" : $switchViewComponent.currentView;
+window.addEventListener('resize', () => {
+  const view = window.innerWidth < 1024 ? 'list' : $switchViewComponent.currentView;
   $switchViewComponent.switchView(view);
 });
 
 // Initialize everything when the page loads
 function initializeApp() {
-  console.log("Initializing application...");
+  console.log('Initializing application...');
   initTheme();
-  loadCSV();
-  console.log("Application initialized");
+  loadRanking();
+  console.log('Application initialized');
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initializeApp);
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
   initializeApp();
 }
@@ -161,10 +138,7 @@ if (document.readyState === "loading") {
 // Fallback to window.onload
 window.onload = function () {
   // Check if initialization hasn't happened yet
-  if (
-    !document.body.classList.contains("dark") &&
-    !document.body.classList.contains("light")
-  ) {
+  if (!document.body.classList.contains('dark') && !document.body.classList.contains('light')) {
     initializeApp();
   }
 };

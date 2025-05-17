@@ -1,4 +1,4 @@
-const $themeTemplate = document.createElement("template");
+const $themeTemplate = document.createElement('template');
 
 const themeStyle = `
   <style>
@@ -35,7 +35,8 @@ const themeStyle = `
   </style>
 `;
 
-$themeTemplate.innerHTML = `
+$themeTemplate.innerHTML =
+  `
   <button id="btn-theme-toggle" class="theme-toggle" aria-label="Toggle theme" title="Tema">
     <svg
       class="sun-icon"
@@ -82,11 +83,11 @@ class ThemeMode extends HTMLElement {
 
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild($themeTemplate.content.cloneNode(true));
 
     // Get the theme toggle button
-    const themeToggle = this.shadowRoot.getElementById("btn-theme-toggle");
+    const themeToggle = this.shadowRoot.getElementById('btn-theme-toggle');
     this.sunIcon = this.shadowRoot.querySelector('.sun-icon');
     this.moonIcon = this.shadowRoot.querySelector('.moon-icon');
 
@@ -94,15 +95,15 @@ class ThemeMode extends HTMLElement {
     this.updateIcons();
 
     // Add click event listener
-    themeToggle.addEventListener("click", () => {
+    themeToggle.addEventListener('click', () => {
       // Dispatch custom event
-      this.dispatchEvent(new CustomEvent("themeChange"));
+      this.dispatchEvent(new CustomEvent('themeChange'));
       // Update icons after theme change
       this.updateIcons();
     });
   }
 
-  updateIcons() {    
+  updateIcons() {
     if (document.body.classList.contains('dark')) {
       this.sunIcon.style.display = 'none';
       this.moonIcon.style.display = 'block';
@@ -112,23 +113,23 @@ class ThemeMode extends HTMLElement {
     }
   }
 
-  initTheme() {   
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    
+  initTheme() {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
     // Get theme from localStorage or use system preference
     const savedTheme = localStorage.getItem('theme');
-    const initialTheme = savedTheme || (prefersDark ? "dark" : "light");
+    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
 
     // Set initial theme
     document.body.classList.add(initialTheme);
-  
+
     // Listen for theme changes from the web component
-    this.addEventListener('themeChange', (e) => {
-      const newTheme = document.body.classList.contains("dark") ? "light" : "dark";
+    this.addEventListener('themeChange', () => {
+      const newTheme = document.body.classList.contains('dark') ? 'light' : 'dark';
       // Use requestAnimationFrame for smoother transition
       requestAnimationFrame(() => {
-        document.body.classList.toggle("dark");
-        document.body.classList.toggle("light");
+        document.body.classList.toggle('dark');
+        document.body.classList.toggle('light');
         // Save theme preference to localStorage
         localStorage.setItem('theme', newTheme);
       });
@@ -136,4 +137,4 @@ class ThemeMode extends HTMLElement {
   }
 }
 
-window.customElements.define("app-theme-mode", ThemeMode);
+window.customElements.define('app-theme-mode', ThemeMode);

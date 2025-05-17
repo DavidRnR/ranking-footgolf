@@ -1,4 +1,4 @@
-const $searchTemplate = document.createElement("template");
+const $searchTemplate = document.createElement('template');
 
 const searchStyle = `
   <style>
@@ -39,7 +39,8 @@ const searchStyle = `
   </style>
 `;
 
-$searchTemplate.innerHTML = `
+$searchTemplate.innerHTML =
+  `
   <div class="search-container">
     <input
       type="text"
@@ -54,17 +55,17 @@ class Search extends HTMLElement {
 
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild($searchTemplate.content.cloneNode(true));
-    
-    this.searchInput = this.shadowRoot.querySelector(".search-input");
+
+    this.searchInput = this.shadowRoot.querySelector('.search-input');
     this.debouncedSearch = this.debounce((e) => this.handleSearch(e), 300);
-    
+
     // Initialize search from URL if present
     this.initSearchFromURL();
-    
+
     // Add search functionality with debounce
-    this.searchInput.addEventListener("input", this.debouncedSearch);
+    this.searchInput.addEventListener('input', this.debouncedSearch);
   }
 
   // Function to debounce search input
@@ -82,33 +83,38 @@ class Search extends HTMLElement {
 
   // Function to handle search filtering
   handleSearch(e) {
-    const searchTerm = this.searchInput.value.toLowerCase().trim();
+    const searchTerm = e.target.value.toLowerCase().trim();
     this.updateSearchInURL(searchTerm);
-    this.dispatchEvent(new CustomEvent('search', {
-      detail: { searchTerm },
-      bubbles: true,
-      composed: true
-    }));
+    this.dispatchEvent(
+      new CustomEvent('search', {
+        detail: { searchTerm },
+        bubbles: true,
+        composed: true,
+      }),
+    );
   }
 
   // Function to update URL with search parameter
   updateSearchInURL(searchTerm) {
     const url = new URL(window.location);
     if (searchTerm) {
-      url.searchParams.set("search", searchTerm);
+      url.searchParams.set('search', searchTerm);
     } else {
-      url.searchParams.delete("search");
+      url.searchParams.delete('search');
     }
-    window.history.replaceState({}, "", url);
+    window.history.replaceState({}, '', url);
+  }
+
+  getSearchTerm() {
+    // Get search term from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchTerm = urlParams.get('search');
+    return searchTerm || '';
   }
 
   // Function to initialize search from URL
   initSearchFromURL() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const searchTerm = urlParams.get("search");
-    if (searchTerm) {
-      this.searchInput.value = searchTerm;
-    }
+    this.searchInput.value = this.getSearchTerm();
   }
 
   // Getter for current search term
@@ -117,4 +123,4 @@ class Search extends HTMLElement {
   }
 }
 
-window.customElements.define("app-search", Search);
+window.customElements.define('app-search', Search);

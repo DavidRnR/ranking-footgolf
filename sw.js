@@ -1,5 +1,6 @@
 const CACHE_NAME = 'footgolf-cache-v1';
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_z4_nPfXouAPBrb5eP2u5JqNXsg1aQedaRk25l36isMLJy21nPlxeKE1GvOX75MFp5sCLXjc6BegJ/pub?output=csv";
+const SHEET_URL =
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_z4_nPfXouAPBrb5eP2u5JqNXsg1aQedaRk25l36isMLJy21nPlxeKE1GvOX75MFp5sCLXjc6BegJ/pub?output=csv';
 
 const urlsToCache = [
   './',
@@ -34,45 +35,44 @@ const urlsToCache = [
   './assets/images/logo-ln.webp',
   './assets/images/logo.webp',
   'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap',
-  'https://fonts.gstatic.com/s/outfit/v11/QGYvz_MVcBeNP4NJtEtq.woff2'
+  'https://fonts.gstatic.com/s/outfit/v11/QGYvz_MVcBeNP4NJtEtq.woff2',
 ];
 
 // Install event - cache assets
-self.addEventListener('install', event => {
+self.addEventListener('install', (event) => {
   console.log('[Service Worker] Installing...');
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('[Service Worker] Caching app shell');
-        return cache.addAll(urlsToCache);
-      })
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('[Service Worker] Caching app shell');
+      return cache.addAll(urlsToCache);
+    }),
   );
 });
 
 // Activate event - clean up old caches
-self.addEventListener('activate', event => {
+self.addEventListener('activate', (event) => {
   console.log('[Service Worker] Activating...');
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
+    caches.keys().then((cacheNames) =>
+      Promise.all(
+        cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
             console.log('[Service Worker] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
-        })
-      );
-    })
+        }),
+      ),
+    ),
   );
 });
 
 // Fetch event - serve from cache, fall back to network
-self.addEventListener('fetch', event => {
+self.addEventListener('fetch', (event) => {
   // Special handling for the Google Sheets URL
   if (event.request.url === SHEET_URL) {
     event.respondWith(
       fetch(event.request)
-        .then(response => {
+        .then((response) => {
           // Check if we received a valid response
           if (!response || response.status !== 200) {
             throw new Error('Network response was not ok');
@@ -82,50 +82,45 @@ self.addEventListener('fetch', event => {
           const responseToCache = response.clone();
 
           // Cache the response
-          caches.open(CACHE_NAME)
-            .then(cache => {
-              cache.put(event.request, responseToCache);
-            });
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
 
           return response;
         })
-        .catch(error => {
+        .catch((error) =>
           // If network fails, try to serve from cache
-          return caches.match(event.request)
-            .then(cachedResponse => {
-              if (cachedResponse) {
-                return cachedResponse;
-              }
-              // If no cached response, throw the original error
-              throw error;
-            });
-        })
+          caches.match(event.request).then((cachedResponse) => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            // If no cached response, throw the original error
+            throw error;
+          }),
+        ),
     );
     return;
   }
 
   // For all other requests, use a cache-first strategy
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
+    caches.match(event.request).then((response) => {
+      if (response) {
+        return response;
+      }
+
+      return fetch(event.request).then((response) => {
+        if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
         }
 
-        return fetch(event.request)
-          .then(response => {
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
+        const responseToCache = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseToCache);
+        });
 
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          });
-      })
+        return response;
+      });
+    }),
   );
-}); 
+});

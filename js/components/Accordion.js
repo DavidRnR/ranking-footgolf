@@ -1,4 +1,4 @@
-const $accordionTemplate = document.createElement("template");
+const $accordionTemplate = document.createElement('template');
 
 const accordionStyle = `
   <style>
@@ -44,7 +44,8 @@ const accordionStyle = `
   </style>
 `;
 
-$accordionTemplate.innerHTML = `
+$accordionTemplate.innerHTML =
+  `
   <div class="accordion">
     <div class="accordion-header">
       <slot name="collapsed"></slot>
@@ -61,7 +62,7 @@ $accordionTemplate.innerHTML = `
 class Accordion extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild($accordionTemplate.content.cloneNode(true));
 
     this.header = this.shadowRoot.querySelector('.accordion-header');
@@ -74,13 +75,15 @@ class Accordion extends HTMLElement {
   toggle() {
     const isExpanded = this.content.classList.toggle('expanded');
     this.icon.classList.toggle('expanded', isExpanded);
-    
+
     // Dispatch custom event
-    this.dispatchEvent(new CustomEvent('accordionToggle', {
-      detail: { expanded: isExpanded },
-      bubbles: true,
-      composed: true
-    }));
+    this.dispatchEvent(
+      new CustomEvent('accordionToggle', {
+        detail: { expanded: isExpanded },
+        bubbles: true,
+        composed: true,
+      }),
+    );
   }
 
   // Optional: Add methods to programmatically control the accordion
@@ -95,4 +98,4 @@ class Accordion extends HTMLElement {
   }
 }
 
-window.customElements.define("app-accordion", Accordion);
+window.customElements.define('app-accordion', Accordion);

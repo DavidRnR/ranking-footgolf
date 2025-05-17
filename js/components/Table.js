@@ -1,4 +1,4 @@
-const $tableTemplate = document.createElement("template");
+const $tableTemplate = document.createElement('template');
 
 const tableStyle = `
   <style>
@@ -92,7 +92,8 @@ const tableStyle = `
   </style>
 `;
 
-$tableTemplate.innerHTML = `
+$tableTemplate.innerHTML =
+  `
   <div class="table-container">
     <table>
       <thead>
@@ -112,62 +113,73 @@ class Table extends HTMLElement {
 
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild($tableTemplate.content.cloneNode(true));
-    
-    this.tableHeader = this.shadowRoot.getElementById("table-header");
-    this.tableBody = this.shadowRoot.getElementById("table-body");
-    
+
+    this.tableHeader = this.shadowRoot.getElementById('table-header');
+    this.tableBody = this.shadowRoot.getElementById('table-body');
+
     this.tableConfig = {
-      headers: ["POS", "", "JUGADOR", "PUNTOS", "HCP", "TORNEOS", "PROCEDENCIA", "TARJETA 15", "PUNTOS QUE PIERDE", "TARJETA 16"],
+      headers: [
+        'POS',
+        '',
+        'JUGADOR',
+        'PUNTOS',
+        'HCP',
+        'TORNEOS',
+        'PROCEDENCIA',
+        'TARJETA 15',
+        'PUNTOS QUE PIERDE',
+        'TARJETA 16',
+      ],
       columns: [
-        { key: "position", index: 0, className: "player-position is-number" },
-        { key: "posBefore", index: 9, className: "is-number" },
-        { key: "player", index: 1, className: "player-name" },
-        { key: "points", index: 2, className: "player-points is-number" },
-        { key: "hcp", index: 3, className: "is-number" },
-        { key: "tournaments", index: 4, className: "is-number" },
-        { key: "origin", index: 5 },
-        { key: "card15", index: 6, className: "is-number" },
-        { key: "pointsLost", index: 7, className: "is-number" },
-        { key: "card16", index: 8, className: "is-number" }
-      ]
+        { key: 'position', index: 0, className: 'player-position is-number' },
+        { key: 'posBefore', index: 9, className: 'is-number' },
+        { key: 'player', index: 1, className: 'player-name' },
+        { key: 'points', index: 2, className: 'player-points is-number' },
+        { key: 'hcp', index: 3, className: 'is-number' },
+        { key: 'tournaments', index: 4, className: 'is-number' },
+        { key: 'origin', index: 5 },
+        { key: 'card15', index: 6, className: 'is-number' },
+        { key: 'pointsLost', index: 7, className: 'is-number' },
+        { key: 'card16', index: 8, className: 'is-number' },
+      ],
     };
   }
 
   generateTableHeaders() {
     this.tableConfig.headers.forEach((header) => {
-      const th = document.createElement("th");
+      const th = document.createElement('th');
       th.textContent = header;
       this.tableHeader.appendChild(th);
     });
   }
 
   renderTableRows(rows) {
-    this.tableBody.innerHTML = ""; // Clear existing content
+    this.tableBody.innerHTML = ''; // Clear existing content
 
     rows.forEach((row) => {
       if (row.trim()) {
-        const columns = row.split(",");
+        const columns = row.split(',');
         if (columns.length > 1) {
-          const tr = document.createElement("tr");
+          const tr = document.createElement('tr');
 
           this.tableConfig.columns.forEach((column) => {
-            const td = document.createElement("td");
-            const divContent = document.createElement("div");
+            const td = document.createElement('td');
+            const divContent = document.createElement('div');
 
             const isPosBefore = column.index === 9;
-            divContent.className = isPosBefore ? "cell-content is-position" : "cell-content";
+            divContent.className = isPosBefore ? 'cell-content is-position' : 'cell-content';
 
             if (isPosBefore) {
               const posBefore = columns[column.index];
               const position = columns[0];
               const posBeforeArrow =
-              parseInt(posBefore) > parseInt(position)
-                ? `<span class="rank-up">↑</span>`
-                : parseInt(posBefore) < parseInt(position)
-                ? `<span class="rank-down">↓</span>`
-                : `<span class="rank-neutral">•</span>`;
+                parseInt(posBefore) > parseInt(position)
+                  ? `<span class="rank-up">↑</span>`
+                  : parseInt(posBefore) < parseInt(position)
+                    ? `<span class="rank-down">↓</span>`
+                    : `<span class="rank-neutral">•</span>`;
 
               divContent.innerHTML = posBeforeArrow;
             } else {
@@ -177,7 +189,7 @@ class Table extends HTMLElement {
             if (column.className) {
               td.className = column.className;
             }
-        
+
             td.appendChild(divContent);
             tr.appendChild(td);
           });
@@ -188,9 +200,9 @@ class Table extends HTMLElement {
     });
   }
 
-  filterTable(searchTerm) {
+  filterPlayers(searchTerm) {
     const filteredRows = this.allRows.filter((row) => {
-      const columns = row.split(",");
+      const columns = row.split(',');
       return columns.some((column) => column.toLowerCase().includes(searchTerm));
     });
     this.renderTableRows(filteredRows);
@@ -202,4 +214,4 @@ class Table extends HTMLElement {
   }
 }
 
-window.customElements.define("app-table", Table);
+window.customElements.define('app-table', Table);

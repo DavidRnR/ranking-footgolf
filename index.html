@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
@@ -18,8 +18,8 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
 
-    <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico" />
-    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+    <link rel="icon" type="image/x-icon" href="./assets/icons/favicon.ico" />
+    <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png" />
     <link rel="manifest" href="manifest.json" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -27,8 +27,8 @@
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="css/base.css?v=1.0" />
-    <link rel="stylesheet" href="css/responsive.css?v=1.0" />
+    <link rel="stylesheet" href="./css/base.css?v=1.0" />
+    <link rel="stylesheet" href="./css/responsive.css?v=1.0" />
 
     <title>Ranking Nacional Footgolf</title>
   </head>
@@ -40,20 +40,43 @@
 
     <div class="logos-container">
       <picture>
-        <source srcset="assets/images/logo.webp" type="image/webp">
-        <img loading="lazy" src="assets/images/logo.png" alt="logo" class="logo-img logo-filtered-blue" />
+        <source srcset="assets/images/logo.webp" type="image/webp" />
+        <img
+          loading="lazy"
+          src="assets/images/logo.png"
+          alt="logo"
+          class="logo-img logo-filtered-blue"
+        />
       </picture>
       <picture>
-        <source srcset="assets/images/logo-copa-republica.webp" type="image/webp">
-        <img loading="lazy"src="assets/images/logo-copa-republica.png" alt="logo" class="logo-img logo-filtered-black" />
+        <source
+          srcset="assets/images/logo-copa-republica.webp"
+          type="image/webp"
+        />
+        <img
+          loading="lazy"
+          src="assets/images/logo-copa-republica.png"
+          alt="logo"
+          class="logo-img logo-filtered-black"
+        />
       </picture>
       <picture>
-        <source srcset="assets/images/logo-liga1.webp" type="image/webp">
-        <img loading="lazy" src="assets/images/logo-liga1.png" alt="logo" class="logo-img" />
+        <source srcset="assets/images/logo-liga1.webp" type="image/webp" />
+        <img
+          loading="lazy"
+          src="assets/images/logo-liga1.png"
+          alt="logo"
+          class="logo-img"
+        />
       </picture>
       <picture>
-        <source srcset="assets/images/logo-ln.webp" type="image/webp">
-        <img loading="lazy" src="assets/images/logo-ln.png" alt="logo" class="logo-img" />
+        <source srcset="assets/images/logo-ln.webp" type="image/webp" />
+        <img
+          loading="lazy"
+          src="assets/images/logo-ln.png"
+          alt="logo"
+          class="logo-img"
+        />
       </picture>
     </div>
 
@@ -70,11 +93,5 @@
       <app-players-list></app-players-list>
     </div>
   </body>
-  <script src="js/components/ThemeMode.js"></script>
-  <script src="js/components/Search.js"></script>
-  <script src="js/components/Table.js"></script>
-  <script src="js/components/Accordion.js"></script>
-  <script src="js/components/PlayersList.js"></script>
-  <script src="js/components/SwitchView.js"></script>
-  <script src="js/main.js?v=1.1"></script>
+  <script type="module" src="./js/main.js?v=1.1"></script>
 </html>

@@ -1,4 +1,4 @@
-const $playersListTemplate = document.createElement("template");
+const $playersListTemplate = document.createElement('template');
 
 const playersListStyle = `
   <style>
@@ -152,7 +152,8 @@ const playersListStyle = `
   </style>
 `;
 
-$playersListTemplate.innerHTML = `
+$playersListTemplate.innerHTML =
+  `
   <div class="players-list">
     <!-- Players will be dynamically added here -->
   </div>
@@ -163,18 +164,18 @@ class PlayersList extends HTMLElement {
 
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild($playersListTemplate.content.cloneNode(true));
-    this.playersList = this.shadowRoot.querySelector(".players-list");
+    this.playersList = this.shadowRoot.querySelector('.players-list');
     this.allPlayers = []; // Store all players for filtering
   }
 
   showSkeleton() {
-    this.playersList.innerHTML = ""; // Clear existing content
+    this.playersList.innerHTML = ''; // Clear existing content
     // Create 10 skeleton items
     for (let i = 0; i < 10; i++) {
-      const skeletonPlayer = document.createElement("div");
-      skeletonPlayer.className = "skeleton";
+      const skeletonPlayer = document.createElement('div');
+      skeletonPlayer.className = 'skeleton';
       this.playersList.appendChild(skeletonPlayer);
     }
   }
@@ -185,36 +186,25 @@ class PlayersList extends HTMLElement {
   }
 
   renderPlayers(players) {
-    this.playersList.innerHTML = ""; // Clear existing content
+    this.playersList.innerHTML = ''; // Clear existing content
 
     players.forEach((player) => {
-      const columns = player.split(",");
-      const [
-        position,
-        playerName,
-        points,
-        hcp,
-        tournaments,
-        origin,
-        card15,
-        pointsLost,
-        card16,
-        posBefore,
-      ] = columns;
+      const columns = player.split(',');
+      const [position, playerName, points, hcp, tournaments, origin, card15, pointsLost, card16, posBefore] = columns;
 
-      const accordion = document.createElement("app-accordion");
+      const accordion = document.createElement('app-accordion');
 
       // Create collapsed content (player name)
-      const collapsedContent = document.createElement("div");
-      collapsedContent.slot = "collapsed";
-      collapsedContent.classList.add("player-collapsed-content");
+      const collapsedContent = document.createElement('div');
+      collapsedContent.slot = 'collapsed';
+      collapsedContent.classList.add('player-collapsed-content');
 
       const posBeforeArrow =
         parseInt(posBefore) > parseInt(position)
           ? `<span class="rank-up">↑</span>`
           : parseInt(posBefore) < parseInt(position)
-          ? `<span class="rank-down">↓</span>`
-          : `<span class="rank-neutral">•</span>`;
+            ? `<span class="rank-down">↓</span>`
+            : `<span class="rank-neutral">•</span>`;
 
       collapsedContent.innerHTML = `
         <div class="player-info">
@@ -226,8 +216,8 @@ class PlayersList extends HTMLElement {
       `;
 
       // Create expanded content (empty for now)
-      const expandedContent = document.createElement("div");
-      expandedContent.slot = "expanded";
+      const expandedContent = document.createElement('div');
+      expandedContent.slot = 'expanded';
       expandedContent.innerHTML = `
         <div class="player-info-expanded">
           <div class="player-info-item"><span>HCP:</span> <span>${hcp}</span></div>
@@ -255,14 +245,12 @@ class PlayersList extends HTMLElement {
     }
 
     const filteredPlayers = this.allPlayers.filter((player) => {
-      const columns = player.split(",");
-      return columns.some((column) =>
-        column.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      const columns = player.split(',');
+      return columns.some((column) => column.toLowerCase().includes(searchTerm.toLowerCase()));
     });
 
     this.renderPlayers(filteredPlayers);
   }
 }
 
-customElements.define("app-players-list", PlayersList);
+customElements.define('app-players-list', PlayersList);

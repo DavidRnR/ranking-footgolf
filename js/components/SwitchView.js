@@ -1,4 +1,4 @@
-const $switchViewTemplate = document.createElement("template");
+const $switchViewTemplate = document.createElement('template');
 
 const switchViewStyle = `
   <style>
@@ -38,7 +38,8 @@ const switchViewStyle = `
   </style>
 `;
 
-$switchViewTemplate.innerHTML = `
+$switchViewTemplate.innerHTML =
+  `
   <div class="switch-view">
     <button class="view-button" data-view="list" aria-label="List view" title="Lista">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -60,17 +61,22 @@ $switchViewTemplate.innerHTML = `
   </div>
 ` + switchViewStyle;
 
+export const VIEWS = {
+  LIST: 'list',
+  TABLE: 'table',
+};
+
 class SwitchView extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild($switchViewTemplate.content.cloneNode(true));
 
     this.buttons = this.shadowRoot.querySelectorAll('.view-button');
-    this.currentView = 'list'; // Default view
+    this.currentView = VIEWS.LIST; // Default view
 
     // Add click listeners
-    this.buttons.forEach(button => {
+    this.buttons.forEach((button) => {
       button.addEventListener('click', () => {
         const view = button.dataset.view;
         this.switchView(view);
@@ -88,15 +94,17 @@ class SwitchView extends HTMLElement {
     this.updateActiveButton();
 
     // Dispatch custom event
-    this.dispatchEvent(new CustomEvent('viewChange', {
-      detail: { view },
-      bubbles: true,
-      composed: true
-    }));
+    this.dispatchEvent(
+      new CustomEvent('viewChange', {
+        detail: { view },
+        bubbles: true,
+        composed: true,
+      }),
+    );
   }
 
   updateActiveButton() {
-    this.buttons.forEach(button => {
+    this.buttons.forEach((button) => {
       if (button.dataset.view === this.currentView) {
         button.classList.add('active');
       } else {
@@ -106,5 +114,4 @@ class SwitchView extends HTMLElement {
   }
 }
 
-customElements.define("app-switch-view", SwitchView);
-
+customElements.define('app-switch-view', SwitchView);
