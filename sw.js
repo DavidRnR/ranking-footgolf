@@ -14,6 +14,7 @@ const urlsToCache = [
   './js/components/SwitchView.js',
   './js/components/PlayersList.js',
   './js/components/Accordion.js',
+  './js/services/rankingService.js',
   './manifest.json',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png',

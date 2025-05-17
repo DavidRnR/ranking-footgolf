@@ -1,6 +1,6 @@
-const $tableTemplate = document.createElement('template');
+const $rankingTableTemplate = document.createElement('template');
 
-const tableStyle = `
+const rankingTableStyle = `
   <style>
     .table-container {
       background-color: var(--color-table-bg);
@@ -92,7 +92,7 @@ const tableStyle = `
   </style>
 `;
 
-$tableTemplate.innerHTML =
+$rankingTableTemplate.innerHTML =
   `
   <div class="table-container">
     <table>
@@ -106,15 +106,15 @@ $tableTemplate.innerHTML =
       </tbody>
     </table>
   </div>
-` + tableStyle;
+` + rankingTableStyle;
 
-class Table extends HTMLElement {
+class RankingTable extends HTMLElement {
   allRows = [];
 
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild($tableTemplate.content.cloneNode(true));
+    this.shadowRoot.appendChild($rankingTableTemplate.content.cloneNode(true));
 
     this.tableHeader = this.shadowRoot.getElementById('table-header');
     this.tableBody = this.shadowRoot.getElementById('table-body');
@@ -135,7 +135,7 @@ class Table extends HTMLElement {
       columns: [
         { key: 'position', index: 0, className: 'player-position is-number' },
         { key: 'posBefore', index: 9, className: 'is-number' },
-        { key: 'player', index: 1, className: 'player-name' },
+        { key: 'name', index: 1, className: 'player-name' },
         { key: 'points', index: 2, className: 'player-points is-number' },
         { key: 'hcp', index: 3, className: 'is-number' },
         { key: 'tournaments', index: 4, className: 'is-number' },
@@ -155,56 +155,48 @@ class Table extends HTMLElement {
     });
   }
 
-  renderTableRows(rows) {
+  renderTableRows(rowsPlayers) {
     this.tableBody.innerHTML = ''; // Clear existing content
 
-    rows.forEach((row) => {
-      if (row.trim()) {
-        const columns = row.split(',');
-        if (columns.length > 1) {
-          const tr = document.createElement('tr');
+    rowsPlayers.forEach((player) => {
+      const tr = document.createElement('tr');
 
-          this.tableConfig.columns.forEach((column) => {
-            const td = document.createElement('td');
-            const divContent = document.createElement('div');
+      this.tableConfig.columns.forEach((column) => {
+        const td = document.createElement('td');
+        const divContent = document.createElement('div');
 
-            const isPosBefore = column.index === 9;
-            divContent.className = isPosBefore ? 'cell-content is-position' : 'cell-content';
+        const isPosBefore = column.index === 9;
+        divContent.className = isPosBefore ? 'cell-content is-position' : 'cell-content';
 
-            if (isPosBefore) {
-              const posBefore = columns[column.index];
-              const position = columns[0];
-              const posBeforeArrow =
-                parseInt(posBefore) > parseInt(position)
-                  ? `<span class="rank-up">↑</span>`
-                  : parseInt(posBefore) < parseInt(position)
-                    ? `<span class="rank-down">↓</span>`
-                    : `<span class="rank-neutral">•</span>`;
+        if (isPosBefore) {
+          const posBeforeArrow =
+            player.posBefore > player.position
+              ? `<span class="rank-up">↑</span>`
+              : player.posBefore < player.position
+                ? `<span class="rank-down">↓</span>`
+                : `<span class="rank-neutral">•</span>`;
 
-              divContent.innerHTML = posBeforeArrow;
-            } else {
-              divContent.textContent = columns[column.index];
-            }
-
-            if (column.className) {
-              td.className = column.className;
-            }
-
-            td.appendChild(divContent);
-            tr.appendChild(td);
-          });
-
-          this.tableBody.appendChild(tr);
+          divContent.innerHTML = posBeforeArrow;
+        } else {
+          divContent.textContent = player[column.key];
         }
-      }
+
+        if (column.className) {
+          td.className = column.className;
+        }
+
+        td.appendChild(divContent);
+        tr.appendChild(td);
+      });
+
+      this.tableBody.appendChild(tr);
     });
   }
 
   filterPlayers(searchTerm) {
-    const filteredRows = this.allRows.filter((row) => {
-      const columns = row.split(',');
-      return columns.some((column) => column.toLowerCase().includes(searchTerm));
-    });
+    const filteredRows = this.allRows.filter((player) =>
+      player.columns.some((column) => column.toLowerCase().includes(searchTerm.toLowerCase())),
+    );
     this.renderTableRows(filteredRows);
   }
 
@@ -214,4 +206,4 @@ class Table extends HTMLElement {
   }
 }
 
-window.customElements.define('app-table', Table);
+window.customElements.define('app-ranking-table', RankingTable);

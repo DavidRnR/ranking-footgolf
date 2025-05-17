@@ -59,7 +59,7 @@ class Search extends HTMLElement {
     this.shadowRoot.appendChild($searchTemplate.content.cloneNode(true));
 
     this.searchInput = this.shadowRoot.querySelector('.search-input');
-    this.debouncedSearch = this.debounce((e) => this.handleSearch(e), 300);
+    this.debouncedSearch = this.debounce(() => this.handleSearch(), 300);
 
     // Initialize search from URL if present
     this.initSearchFromURL();
@@ -82,8 +82,8 @@ class Search extends HTMLElement {
   }
 
   // Function to handle search filtering
-  handleSearch(e) {
-    const searchTerm = e.target.value.toLowerCase().trim();
+  handleSearch() {
+    const searchTerm = this.searchInput.value.toLowerCase().trim();
     this.updateSearchInURL(searchTerm);
     this.dispatchEvent(
       new CustomEvent('search', {

@@ -75,15 +75,6 @@ class Accordion extends HTMLElement {
   toggle() {
     const isExpanded = this.content.classList.toggle('expanded');
     this.icon.classList.toggle('expanded', isExpanded);
-
-    // Dispatch custom event
-    this.dispatchEvent(
-      new CustomEvent('accordionToggle', {
-        detail: { expanded: isExpanded },
-        bubbles: true,
-        composed: true,
-      }),
-    );
   }
 
   // Optional: Add methods to programmatically control the accordion

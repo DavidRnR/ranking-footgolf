@@ -1,8 +1,8 @@
 import './components/ThemeMode.js';
 import './components/Search.js';
-import './components/Table.js';
+import './components/RankingTable.js';
 import './components/Accordion.js';
-import './components/PlayersList.js';
+import './components/Ranking.js';
 import './components/SwitchView.js';
 import { VIEWS } from './components/SwitchView.js';
 import { getRanking } from './services/rankingService.js';
@@ -10,7 +10,7 @@ import { getRanking } from './services/rankingService.js';
 let ranking = [];
 const $container = document.querySelector('.container');
 let $tableComponent;
-let $playersListComponent = document.querySelector('app-players-list');
+let $rankingComponent = document.querySelector('app-ranking');
 const $lastUpdateElement = document.querySelector('.last-update');
 const $switchViewComponent = document.querySelector('app-switch-view');
 const $searchComponent = document.querySelector('app-search');
@@ -23,8 +23,8 @@ function initTheme() {
 }
 
 function handleChangeView(view) {
-  const existingTable = $container.querySelector('app-table');
-  const existingList = $container.querySelector('app-players-list');
+  const existingTable = $container.querySelector('app-ranking-table');
+  const existingList = $container.querySelector('app-ranking');
 
   const searchTerm = $searchComponent.getSearchTerm();
 
@@ -36,7 +36,7 @@ function handleChangeView(view) {
 
     // Create and initialize table if it doesn't exist
     if (!existingTable) {
-      $tableComponent = document.createElement('app-table');
+      $tableComponent = document.createElement('app-ranking-table');
       $tableComponent.generateTableHeaders();
       $tableComponent.setRows(ranking);
       if (searchTerm) {
@@ -52,12 +52,12 @@ function handleChangeView(view) {
 
     // Create and initialize list if it doesn't exist
     if (!existingList) {
-      $playersListComponent = document.createElement('app-players-list');
-      $playersListComponent.setPlayers(ranking);
+      $rankingComponent = document.createElement('app-ranking');
+      $rankingComponent.setPlayers(ranking);
       if (searchTerm) {
-        $playersListComponent.filterPlayers(searchTerm);
+        $rankingComponent.filterPlayers(searchTerm);
       }
-      $container.appendChild($playersListComponent);
+      $container.appendChild($rankingComponent);
     }
   }
 }
@@ -66,7 +66,7 @@ function handleChangeView(view) {
 async function loadRanking() {
   try {
     // Show skeleton loading state for initial list view
-    $playersListComponent.showSkeleton();
+    $rankingComponent.showSkeleton();
 
     const { ranking: rankingData, lastUpdate } = await getRanking();
     ranking = rankingData;
@@ -82,16 +82,16 @@ async function loadRanking() {
     });
 
     // Initialize players list
-    $playersListComponent.setPlayers(ranking);
+    $rankingComponent.setPlayers(ranking);
 
     // If there's a search term, filter the rows
     if (searchTerm) {
-      $playersListComponent.filterPlayers(searchTerm);
+      $rankingComponent.filterPlayers(searchTerm);
     }
 
     // Add search event listener
     $searchComponent.addEventListener('search', (e) => {
-      const activeView = $switchViewComponent.currentView === 'table' ? $tableComponent : $playersListComponent;
+      const activeView = $switchViewComponent.currentView === 'table' ? $tableComponent : $rankingComponent;
       activeView.filterPlayers?.(e.detail.searchTerm);
     });
 
