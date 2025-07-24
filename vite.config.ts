@@ -1,7 +1,19 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 
+// Determine base path based on environment
+const getBasePath = () => {
+  // For GitHub Pages, use the repository name
+  if (process.env.GITHUB_REPOSITORY) {
+    const repoName = process.env.GITHUB_REPOSITORY.split('/')[1];
+    return `/${repoName}/`;
+  }
+  // For local development, use root
+  return '/';
+};
+
 export default defineConfig({
+  base: getBasePath(),
   root: 'src',
   build: {
     outDir: '../dist',
