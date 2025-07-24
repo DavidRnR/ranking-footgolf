@@ -1,10 +1,10 @@
-import js from '@eslint/js';
-import globals from 'globals';
-import json from '@eslint/json';
 import css from '@eslint/css';
-import { defineConfig, globalIgnores } from 'eslint/config';
-import eslintPluginPrettier from 'eslint-plugin-prettier';
+import js from '@eslint/js';
+import json from '@eslint/json';
 import prettierConfig from 'eslint-config-prettier';
+import eslintPluginPrettier from 'eslint-plugin-prettier';
+import { defineConfig, globalIgnores } from 'eslint/config';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
@@ -34,7 +34,7 @@ export default defineConfig([
     extends: ['css/recommended'],
   },
   prettierConfig,
-  globalIgnores(['package-lock.json']),
+  globalIgnores(['package-lock.json', 'dist/**']),
   tseslint.configs.recommended,
   {
     rules: {
