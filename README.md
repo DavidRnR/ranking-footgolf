@@ -15,7 +15,7 @@ Una Aplicación Web Progresiva (PWA) que muestra y gestiona el ranking nacional 
 
 ## Detalles Técnicos
 
-- Desarrollado con JavaScript vanilla
+- Desarrollado con TypeScript y Vite
 - Utiliza la API de Google Sheets para los datos
 - Implementa Service Workers para soporte offline
 - Diseño responsive usando CSS moderno
@@ -27,12 +27,25 @@ Una Aplicación Web Progresiva (PWA) que muestra y gestiona el ranking nacional 
 ## Configuración
 
 1. Clonar el repositorio
-2. Abrir `index.html` en tu navegador
-3. Para desarrollo, usar un servidor local (ej: Live Server en VS Code)
+2. Instalar dependencias: `npm install`
+3. Para desarrollo: `npm run dev`
+4. Para build: `npm run build`
+5. Para preview: `npm run preview`
+
+## Despliegue
+
+La aplicación se despliega automáticamente a GitHub Pages cuando se hace push a la rama `main`.
+
+### Despliegue Manual
+
+1. Ejecutar `npm run build`
+2. Los archivos de build estarán en la carpeta `dist/`
+3. Subir el contenido de `dist/` a tu servidor web
 
 ## Soporte Offline
 
 La aplicación funciona sin conexión gracias a los Service Workers. Los siguientes recursos se almacenan en caché:
+
 - Todos los archivos esenciales de la aplicación
 - Recursos (íconos e imágenes)
 - Fuentes de Google

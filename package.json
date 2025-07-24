@@ -10,7 +10,8 @@
     "type-check": "tsc --noEmit",
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && echo 'Build completed successfully!'"
   },
   "keywords": [],
   "author": "",
