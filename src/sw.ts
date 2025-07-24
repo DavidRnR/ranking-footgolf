@@ -1,9 +1,14 @@
 // Determine base path dynamically
 const getBasePath = () => {
-  // For GitHub Pages, use the repository name from the environment
-  if (typeof process !== 'undefined' && process.env.GITHUB_REPOSITORY) {
-    const repoName = process.env.GITHUB_REPOSITORY.split('/')[1];
-    return `/${repoName}/`;
+  // For GitHub Pages, detect from the service worker location
+  if (typeof self !== 'undefined' && self.location) {
+    const pathSegments = self.location.pathname.split('/');
+    // If we're on GitHub Pages, the path will be /username/repo-name/sw.js
+    // So we need to remove 'sw.js' and get the base path
+    if (pathSegments.length > 2) {
+      const basePath = pathSegments.slice(0, -1).join('/') + '/';
+      return basePath;
+    }
   }
   // For local development, use root
   return '/';
