@@ -103,8 +103,9 @@ async function loadRanking() {
 // Register Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
+    // The service worker will be built with the correct base path
     navigator.serviceWorker
-      .register('/sw.js')
+      .register('./sw.js')
       .then(() => {
         console.log('ServiceWorker registration successful');
       })

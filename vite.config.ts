@@ -22,9 +22,16 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve('src/index.html'),
+        sw: resolve('src/sw.ts'),
       },
       output: {
-        entryFileNames: 'js/[name].[hash].js',
+        entryFileNames: (chunkInfo) => {
+          // Service worker should be in root without hash
+          if (chunkInfo.name === 'sw') {
+            return 'sw.js';
+          }
+          return 'js/[name].[hash].js';
+        },
         chunkFileNames: 'js/[name].[hash].js',
         assetFileNames: (assetInfo) => {
           if (assetInfo.names && assetInfo.names[assetInfo.names.length - 1].endsWith('.css')) {
