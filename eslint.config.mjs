@@ -5,6 +5,7 @@ import css from '@eslint/css';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import eslintPluginPrettier from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
+import tseslint from 'typescript-eslint';
 
 export default defineConfig([
   {
@@ -34,4 +35,20 @@ export default defineConfig([
   },
   prettierConfig,
   globalIgnores(['package-lock.json']),
+  tseslint.configs.recommended,
+  {
+    rules: {
+      'arrow-body-style': 'warn',
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+        },
+      ],
+    },
+  },
 ]);

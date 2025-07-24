@@ -1,3 +1,5 @@
+import { Player } from '../models/player';
+
 const $rankingTableTemplate = document.createElement('template');
 
 const rankingTableStyle = `
@@ -109,16 +111,19 @@ $rankingTableTemplate.innerHTML =
   </div>
 ` + rankingTableStyle;
 
-class RankingTable extends HTMLElement {
-  allRows = [];
+export class RankingTable extends HTMLElement {
+  allRows: Player[] = [];
+  tableHeader: HTMLTableSectionElement;
+  tableBody: HTMLTableSectionElement;
+  tableConfig: { headers: string[]; columns: { key: string; index: number; className?: string }[] };
 
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild($rankingTableTemplate.content.cloneNode(true));
+    this.shadowRoot!.appendChild($rankingTableTemplate.content.cloneNode(true));
 
-    this.tableHeader = this.shadowRoot.getElementById('table-header');
-    this.tableBody = this.shadowRoot.getElementById('table-body');
+    this.tableHeader = this.shadowRoot!.getElementById('table-header') as HTMLTableSectionElement;
+    this.tableBody = this.shadowRoot!.getElementById('table-body') as HTMLTableSectionElement;
 
     this.tableConfig = {
       headers: [
@@ -167,7 +172,7 @@ class RankingTable extends HTMLElement {
     this.tableBody.appendChild(tr);
   }
 
-  renderTableRows(rowsPlayers) {
+  renderTableRows(rowsPlayers: Player[]) {
     this.tableBody.innerHTML = ''; // Clear existing content
 
     if (rowsPlayers.length === 0) {
@@ -195,7 +200,7 @@ class RankingTable extends HTMLElement {
 
           divContent.innerHTML = changesArrow;
         } else {
-          divContent.textContent = player[column.key];
+          divContent.textContent = player[column.key as keyof Player].toString();
         }
 
         if (column.className) {
@@ -210,14 +215,14 @@ class RankingTable extends HTMLElement {
     });
   }
 
-  filterPlayers(searchTerm) {
+  filterPlayers(searchTerm: string) {
     const filteredRows = this.allRows.filter((player) =>
       player.columns.some((column) => column.toLowerCase().includes(searchTerm.toLowerCase())),
     );
     this.renderTableRows(filteredRows);
   }
 
-  setRows(rows) {
+  setRows(rows: Player[]) {
     this.allRows = rows;
     this.renderTableRows(rows);
   }

@@ -32,7 +32,7 @@ const searchStyle = `
       opacity: 0.7;
     }
 
-    .search-icon, 
+    .search-icon,
     .search-clear {
       position: absolute;
       right: 0.75em;
@@ -47,7 +47,7 @@ const searchStyle = `
     .search-clear {
       cursor: pointer;
     }
-      
+
     @media screen and (max-width: 1024px) {
         .search-container {
             max-width: 100%;
@@ -78,18 +78,21 @@ $searchTemplate.innerHTML =
   </div>
 ` + searchStyle;
 
-class Search extends HTMLElement {
-  searchInput;
+export class Search extends HTMLElement {
+  searchInput: HTMLInputElement;
+  debouncedSearch: () => void;
+  searchClear: HTMLSpanElement;
+  searchIcon: HTMLSpanElement;
 
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild($searchTemplate.content.cloneNode(true));
+    this.shadowRoot!.appendChild($searchTemplate.content.cloneNode(true));
 
-    this.searchInput = this.shadowRoot.querySelector('.search-input');
+    this.searchInput = this.shadowRoot!.querySelector('.search-input') as HTMLInputElement;
     this.debouncedSearch = this.debounce(() => this.handleSearch(), 300);
-    this.searchClear = this.shadowRoot.querySelector('.search-clear');
-    this.searchIcon = this.shadowRoot.querySelector('.search-icon');
+    this.searchClear = this.shadowRoot!.querySelector('.search-clear') as HTMLSpanElement;
+    this.searchIcon = this.shadowRoot!.querySelector('.search-icon') as HTMLSpanElement;
     // Initialize search from URL if present
     this.initSearchFromURL();
 
@@ -103,9 +106,9 @@ class Search extends HTMLElement {
   }
 
   // Function to debounce search input
-  debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
+  debounce(func: (...args: unknown[]) => void, wait: number) {
+    let timeout: NodeJS.Timeout;
+    return function executedFunction(...args: unknown[]) {
       const later = () => {
         clearTimeout(timeout);
         func(...args);
@@ -136,8 +139,8 @@ class Search extends HTMLElement {
   }
 
   // Function to update URL with search parameter
-  updateSearchInURL(searchTerm) {
-    const url = new URL(window.location);
+  updateSearchInURL(searchTerm: string) {
+    const url = new URL(window.location.href);
     if (searchTerm) {
       url.searchParams.set('search', searchTerm);
     } else {

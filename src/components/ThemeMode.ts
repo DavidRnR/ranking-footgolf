@@ -77,19 +77,19 @@ $themeTemplate.innerHTML =
   </button>
 ` + themeStyle;
 
-class ThemeMode extends HTMLElement {
-  sunIcon;
-  moonIcon;
+export class ThemeMode extends HTMLElement {
+  sunIcon: SVGSVGElement;
+  moonIcon: SVGSVGElement;
 
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild($themeTemplate.content.cloneNode(true));
+    this.shadowRoot!.appendChild($themeTemplate.content.cloneNode(true));
 
     // Get the theme toggle button
-    const themeToggle = this.shadowRoot.getElementById('btn-theme-toggle');
-    this.sunIcon = this.shadowRoot.querySelector('.sun-icon');
-    this.moonIcon = this.shadowRoot.querySelector('.moon-icon');
+    const themeToggle = this.shadowRoot!.getElementById('btn-theme-toggle') as HTMLButtonElement;
+    this.sunIcon = this.shadowRoot!.querySelector('.sun-icon') as SVGSVGElement;
+    this.moonIcon = this.shadowRoot!.querySelector('.moon-icon') as SVGSVGElement;
 
     // Set initial icon visibility
     this.updateIcons();

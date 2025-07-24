@@ -59,15 +59,19 @@ $accordionTemplate.innerHTML =
   </div>
 ` + accordionStyle;
 
-class Accordion extends HTMLElement {
+export class Accordion extends HTMLElement {
+  header: HTMLElement;
+  content: HTMLElement;
+  icon: HTMLElement;
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild($accordionTemplate.content.cloneNode(true));
+    this.shadowRoot!.appendChild($accordionTemplate.content.cloneNode(true));
 
-    this.header = this.shadowRoot.querySelector('.accordion-header');
-    this.content = this.shadowRoot.querySelector('.accordion-content');
-    this.icon = this.shadowRoot.querySelector('.accordion-icon');
+    this.header = this.shadowRoot!.querySelector('.accordion-header') as HTMLElement;
+    this.content = this.shadowRoot!.querySelector('.accordion-content') as HTMLElement;
+    this.icon = this.shadowRoot!.querySelector('.accordion-icon') as HTMLElement;
 
     this.header.addEventListener('click', () => this.toggle());
   }

@@ -1,41 +1,31 @@
-const CACHE_NAME = 'footgolf-cache-v1.3';
+const CACHE_NAME = 'footgolf-cache-v1.4';
 const SHEET_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_z4_nPfXouAPBrb5eP2u5JqNXsg1aQedaRk25l36isMLJy21nPlxeKE1GvOX75MFp5sCLXjc6BegJ/pub?output=csv';
 
+// Cache the main app shell - these will be updated dynamically
 const urlsToCache = [
-  './',
-  './index.html',
-  './css/base.css',
-  './css/responsive.css',
-  './js/main.js',
-  './js/components/Accordion.js',
-  './js/components/NoResults.js',
-  './js/components/PlayersList.js',
-  './js/components/Search.js',
-  './js/components/SwitchView.js',
-  './js/components/Table.js',
-  './js/components/ThemeMode.js',
-  './js/services/rankingService.js',
-  './manifest.json',
-  './assets/icons/icon-192.png',
-  './assets/icons/icon-512.png',
-  './assets/icons/icon-192-maskable.png',
-  './assets/icons/icon-512-maskable.png',
-  './assets/icons/apple-touch-icon.png',
-  './assets/icons/icon-192.webp',
-  './assets/icons/icon-512.webp',
-  './assets/icons/icon-192-maskable.webp',
-  './assets/icons/icon-512-maskable.webp',
-  './assets/icons/apple-touch-icon.webp',
-  './assets/icons/favicon.ico',
-  './assets/images/logo.png',
-  './assets/images/logo-ln.png',
-  './assets/images/logo-liga1.png',
-  './assets/images/logo-copa-republica.png',
-  './assets/images/logo-copa-republica.webp',
-  './assets/images/logo-liga1.webp',
-  './assets/images/logo-ln.webp',
-  './assets/images/logo.webp',
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/assets/icons/icon-192.png',
+  '/assets/icons/icon-512.png',
+  '/assets/icons/icon-192-maskable.png',
+  '/assets/icons/icon-512-maskable.png',
+  '/assets/icons/apple-touch-icon.png',
+  '/assets/icons/icon-192.webp',
+  '/assets/icons/icon-512.webp',
+  '/assets/icons/icon-192-maskable.webp',
+  '/assets/icons/icon-512-maskable.webp',
+  '/assets/icons/apple-touch-icon.webp',
+  '/assets/icons/favicon.ico',
+  '/assets/images/logo.png',
+  '/assets/images/logo-ln.png',
+  '/assets/images/logo-liga1.png',
+  '/assets/images/logo-copa-republica.png',
+  '/assets/images/logo-copa-republica.webp',
+  '/assets/images/logo-liga1.webp',
+  '/assets/images/logo-ln.webp',
+  '/assets/images/logo.webp',
   'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap',
   'https://fonts.gstatic.com/s/outfit/v11/QGYvz_MVcBeNP4NJtEtq.woff2',
 ];
@@ -116,6 +106,7 @@ self.addEventListener('fetch', (event) => {
           return response;
         }
 
+        // Cache all successful responses (including hashed JS/CSS files)
         const responseToCache = response.clone();
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(event.request, responseToCache);

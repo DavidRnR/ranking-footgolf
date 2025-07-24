@@ -43,11 +43,11 @@ $noResultsTemplate.innerHTML =
       </div>
     ` + noResultsStyle;
 
-class NoResults extends HTMLElement {
+export class NoResults extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild($noResultsTemplate.content.cloneNode(true));
+    this.shadowRoot!.appendChild($noResultsTemplate.content.cloneNode(true));
   }
 }
 

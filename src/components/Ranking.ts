@@ -1,3 +1,5 @@
+import { Player } from '../models/player';
+
 const $rankingTemplate = document.createElement('template');
 
 const rankingStyle = `
@@ -155,14 +157,15 @@ $rankingTemplate.innerHTML =
   </div>
 ` + rankingStyle;
 
-class Ranking extends HTMLElement {
-  allPlayers = [];
+export class Ranking extends HTMLElement {
+  allPlayers: Player[] = [];
+  playersList: HTMLDivElement;
 
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild($rankingTemplate.content.cloneNode(true));
-    this.playersList = this.shadowRoot.querySelector('.players-list');
+    this.shadowRoot!.appendChild($rankingTemplate.content.cloneNode(true));
+    this.playersList = this.shadowRoot!.querySelector('.players-list') as HTMLDivElement;
     this.allPlayers = []; // Store all players for filtering
   }
 
@@ -176,7 +179,7 @@ class Ranking extends HTMLElement {
     }
   }
 
-  setPlayers(players) {
+  setPlayers(players: Player[]) {
     this.allPlayers = players; // Store all players
     this.renderPlayers(players);
   }
@@ -185,7 +188,7 @@ class Ranking extends HTMLElement {
     this.playersList.innerHTML = '<app-no-results></app-no-results>';
   }
 
-  renderPlayers(players) {
+  renderPlayers(players: Player[]) {
     this.playersList.innerHTML = ''; // Clear existing content
 
     if (players.length === 0) {
@@ -242,7 +245,7 @@ class Ranking extends HTMLElement {
     });
   }
 
-  filterPlayers(searchTerm) {
+  filterPlayers(searchTerm: string) {
     if (!searchTerm) {
       this.renderPlayers(this.allPlayers);
       return;

@@ -1,34 +1,40 @@
-import './components/ThemeMode.js';
-import './components/Search.js';
-import './components/RankingTable.js';
-import './components/Accordion.js';
-import './components/Ranking.js';
-import './components/SwitchView.js';
-import './components/NoResults.js';
-import { VIEWS } from './components/SwitchView.js';
-import { getRanking } from './services/rankingService.js';
+import './components/Accordion';
+import './components/NoResults';
+import './components/Ranking';
+import { Ranking } from './components/Ranking';
+import './components/RankingTable';
+import { RankingTable } from './components/RankingTable';
+import './components/Search';
+import { Search } from './components/Search';
+import './components/SwitchView';
+import { SwitchView } from './components/SwitchView';
+import './components/ThemeMode';
+import { ThemeMode } from './components/ThemeMode';
+import { RankingView } from './models/app';
+import { Player } from './models/player';
+import { getRanking } from './services/rankingService';
 
-let ranking = [];
-const $container = document.querySelector('.container');
-let $tableComponent;
-let $rankingComponent = document.querySelector('app-ranking');
+let ranking: Player[] = [];
+const $container = document.querySelector('.container') as HTMLDivElement;
+let $tableComponent: RankingTable;
+let $rankingComponent = document.querySelector('app-ranking') as Ranking;
 const $lastUpdateElement = document.querySelector('.last-update');
-const $switchViewComponent = document.querySelector('app-switch-view');
-const $searchComponent = document.querySelector('app-search');
+const $switchViewComponent = document.querySelector('app-switch-view') as SwitchView;
+const $searchComponent = document.querySelector('app-search') as Search;
 
 function initTheme() {
   console.log('Initializing theme...');
-  const themeMode = document.querySelector('app-theme-mode');
+  const themeMode = document.querySelector('app-theme-mode') as ThemeMode;
   themeMode.initTheme();
 }
 
-function handleChangeView(view) {
+function handleChangeView(view: RankingView) {
   const existingTable = $container.querySelector('app-ranking-table');
   const existingList = $container.querySelector('app-ranking');
 
   const searchTerm = $searchComponent.getSearchTerm();
 
-  if (view === VIEWS.TABLE) {
+  if (view === RankingView.TABLE) {
     // Remove list if exists
     if (existingList) {
       existingList.remove();
@@ -36,7 +42,7 @@ function handleChangeView(view) {
 
     // Create and initialize table if it doesn't exist
     if (!existingTable) {
-      $tableComponent = document.createElement('app-ranking-table');
+      $tableComponent = document.createElement('app-ranking-table') as RankingTable;
       $tableComponent.generateTableHeaders();
       $tableComponent.setRows(ranking);
       if (searchTerm) {
@@ -52,7 +58,7 @@ function handleChangeView(view) {
 
     // Create and initialize list if it doesn't exist
     if (!existingList) {
-      $rankingComponent = document.createElement('app-ranking');
+      $rankingComponent = document.createElement('app-ranking') as Ranking;
       $rankingComponent.setPlayers(ranking);
       if (searchTerm) {
         $rankingComponent.filterPlayers(searchTerm);
@@ -69,13 +75,13 @@ async function loadRanking() {
     const { ranking: rankingData, lastUpdate } = await getRanking();
     ranking = rankingData;
 
-    $lastUpdateElement.textContent = `Última actualización: ${lastUpdate || 'No disponible'}`;
+    $lastUpdateElement!.textContent = `Última actualización: ${lastUpdate || 'No disponible'}`;
 
     const searchTerm = $searchComponent.getSearchTerm();
 
-    $switchViewComponent.addEventListener('viewChange', (e) => {
+    $switchViewComponent.addEventListener('viewChange', ((e: CustomEvent<{ view: RankingView }>) => {
       handleChangeView(e.detail.view);
-    });
+    }) as EventListener);
 
     $rankingComponent.setPlayers(ranking);
 
@@ -83,10 +89,10 @@ async function loadRanking() {
       $rankingComponent.filterPlayers(searchTerm);
     }
 
-    $searchComponent.addEventListener('search', (e) => {
+    $searchComponent.addEventListener('search', ((e: CustomEvent<{ searchTerm: string }>) => {
       const activeView = $switchViewComponent.currentView === 'table' ? $tableComponent : $rankingComponent;
       activeView.filterPlayers?.(e.detail.searchTerm);
-    });
+    }) as EventListener);
 
     console.log('CSV data loaded successfully');
   } catch (error) {
@@ -98,7 +104,7 @@ async function loadRanking() {
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
-      .register('./sw.js')
+      .register('/sw.js')
       .then(() => {
         console.log('ServiceWorker registration successful');
       })
@@ -110,8 +116,8 @@ if ('serviceWorker' in navigator) {
 
 // Add resize listener to handle window size changes
 window.addEventListener('resize', () => {
-  const view = window.innerWidth < 1366 ? 'list' : $switchViewComponent.currentView;
-  $switchViewComponent.switchView(view);
+  const view = window.innerWidth < 1366 ? RankingView.LIST : $switchViewComponent.currentView;
+  $switchViewComponent.switchView(view as RankingView);
 });
 
 function initializeApp() {

@@ -1,3 +1,5 @@
+import { RankingView } from '../models/app';
+
 const $switchViewTemplate = document.createElement('template');
 
 const switchViewStyle = `
@@ -61,24 +63,22 @@ $switchViewTemplate.innerHTML =
   </div>
 ` + switchViewStyle;
 
-export const VIEWS = {
-  LIST: 'list',
-  TABLE: 'table',
-};
+export class SwitchView extends HTMLElement {
+  buttons: NodeListOf<HTMLButtonElement>;
+  currentView: string;
 
-class SwitchView extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild($switchViewTemplate.content.cloneNode(true));
+    this.shadowRoot!.appendChild($switchViewTemplate.content.cloneNode(true));
 
-    this.buttons = this.shadowRoot.querySelectorAll('.view-button');
-    this.currentView = VIEWS.LIST; // Default view
+    this.buttons = this.shadowRoot!.querySelectorAll('.view-button') as NodeListOf<HTMLButtonElement>;
+    this.currentView = RankingView.LIST; // Default view
 
     // Add click listeners
     this.buttons.forEach((button) => {
       button.addEventListener('click', () => {
-        const view = button.dataset.view;
+        const view = (button.dataset.view || RankingView.LIST) as RankingView;
         this.switchView(view);
       });
     });
@@ -87,7 +87,7 @@ class SwitchView extends HTMLElement {
     this.updateActiveButton();
   }
 
-  switchView(view) {
+  switchView(view: RankingView) {
     if (view === this.currentView) return;
 
     this.currentView = view;
