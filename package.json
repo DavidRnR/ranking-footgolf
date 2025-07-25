@@ -1,6 +1,6 @@
 {
   "name": "ranking-footgolf",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Desarrollado por David Martín - carlosdavidmartin@gmail.com",
   "type": "module",
   "scripts": {
@@ -9,9 +9,8 @@
     "format": "prettier --write .",
     "type-check": "tsc --noEmit",
     "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "deploy": "npm run build && echo 'Build completed successfully!'"
+    "build": "tsc && vite build && echo 'Build completed successfully!'",
+    "preview": "vite preview"
   },
   "keywords": [],
   "author": "",

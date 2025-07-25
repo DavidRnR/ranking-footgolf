@@ -3,23 +3,20 @@ const getBasePath = () => {
   // For GitHub Pages, detect from the service worker location
   if (typeof self !== 'undefined' && self.location) {
     const pathSegments = self.location.pathname.split('/');
-    console.info('[Service Worker] Path segments:', pathSegments);
 
     // If we're on GitHub Pages, the path will be /username/repo-name/sw.js
     // So we need to remove 'sw.js' and get the base path
     if (pathSegments.length > 2) {
       const basePath = pathSegments.slice(0, -1).join('/') + '/';
-      console.info('[Service Worker] Calculated base path:', basePath);
       return basePath;
     }
   }
   // For local development, use root
-  console.info('[Service Worker] Using root path for local development');
   return '/';
 };
 
 const BASE_PATH = getBasePath();
-const CACHE_NAME = 'footgolf-cache-v1.4.1';
+const CACHE_NAME = 'footgolf-cache-v1.4.2';
 const SHEET_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_z4_nPfXouAPBrb5eP2u5JqNXsg1aQedaRk25l36isMLJy21nPlxeKE1GvOX75MFp5sCLXjc6BegJ/pub?output=csv';
 
@@ -55,10 +52,13 @@ const urlsToCache = [
 self.addEventListener('install', (event) => {
   console.info('[Service Worker] Installing...');
   (event as ExtendableEvent).waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.info('[Service Worker] Caching app shell');
-      return cache.addAll(urlsToCache);
-    }),
+    caches
+      .open(CACHE_NAME)
+      .then((cache) => {
+        console.info('[Service Worker] Caching app shell');
+        return cache.addAll(urlsToCache);
+      })
+      .then(() => (self as unknown as ServiceWorkerGlobalScope).skipWaiting()),
   );
 });
 
@@ -66,16 +66,19 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   console.info('[Service Worker] Activating...');
   (event as ExtendableEvent).waitUntil(
-    caches.keys().then((cacheNames) =>
-      Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.info('[Service Worker] Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        }),
-      ),
-    ),
+    caches
+      .keys()
+      .then((cacheNames) =>
+        Promise.all(
+          cacheNames.map((cacheName) => {
+            if (cacheName !== CACHE_NAME) {
+              console.info('[Service Worker] Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
+            }
+          }),
+        ),
+      )
+      .then(() => (self as unknown as ServiceWorkerGlobalScope).clients.claim()),
   );
 });
 
