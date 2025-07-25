@@ -19,6 +19,8 @@ export default defineConfig({
     outDir: '../dist',
     emptyOutDir: true,
     cssCodeSplit: true,
+    target: 'esnext',
+    modulePreload: false, // This is to avoid the issue with the service worker about preloading data
     rollupOptions: {
       input: {
         main: resolve('src/index.html'),

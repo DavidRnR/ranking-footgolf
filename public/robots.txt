@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Sitemap location (you can add this later if you create a sitemap)
+# Sitemap: https://yourdomain.com/sitemap.xml
+
+# Disallow any admin or private areas (if you have any)
+# Disallow: /admin/
+# Disallow: /private/
+
+# Allow all crawlers to access the main content
+# This is a public ranking website, so we want it to be indexed

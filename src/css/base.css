@@ -11,8 +11,8 @@ body {
 :root {
   color-scheme: light dark;
   --color-bg: light-dark(#ffffff, #1a1a1a);
-  --color-text: light-dark(#000000, #ffffff);
-  --color-table-bg: light-dark(#ffffff, #2a2a2a);
+  --color-text: light-dark(#030712, #fefefe);
+  --color-table-bg: light-dark(#fefefe, #2a2a2a);
   --color-table-header: light-dark(#bddce7, #333333);
   --color-table-hover: light-dark(#f5f5f5, #333333);
   --color-primary: light-dark(#194990, #4a8db3);
@@ -71,6 +71,7 @@ header {
   font-size: 2.5rem;
   font-weight: bold;
   margin-bottom: 0.5em;
+  color: var(--color-text);
 }
 
 .logos-container {

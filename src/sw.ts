@@ -3,25 +3,23 @@ const getBasePath = () => {
   // For GitHub Pages, detect from the service worker location
   if (typeof self !== 'undefined' && self.location) {
     const pathSegments = self.location.pathname.split('/');
-    console.log('[Service Worker] Path segments:', pathSegments);
+    console.info('[Service Worker] Path segments:', pathSegments);
 
     // If we're on GitHub Pages, the path will be /username/repo-name/sw.js
     // So we need to remove 'sw.js' and get the base path
     if (pathSegments.length > 2) {
       const basePath = pathSegments.slice(0, -1).join('/') + '/';
-      console.log('[Service Worker] Calculated base path:', basePath);
+      console.info('[Service Worker] Calculated base path:', basePath);
       return basePath;
     }
   }
   // For local development, use root
-  console.log('[Service Worker] Using root path for local development');
+  console.info('[Service Worker] Using root path for local development');
   return '/';
 };
 
 const BASE_PATH = getBasePath();
-console.log('[Service Worker] Base path detected:', BASE_PATH);
-console.log('[Service Worker] Service worker location:', self.location.pathname);
-const CACHE_NAME = 'footgolf-cache-v1.4';
+const CACHE_NAME = 'footgolf-cache-v1.4.1';
 const SHEET_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_z4_nPfXouAPBrb5eP2u5JqNXsg1aQedaRk25l36isMLJy21nPlxeKE1GvOX75MFp5sCLXjc6BegJ/pub?output=csv';
 
@@ -53,14 +51,12 @@ const urlsToCache = [
   'https://fonts.gstatic.com/s/outfit/v11/QGYvz_MVcBeNP4NJtEtq.woff2',
 ];
 
-console.log('[Service Worker] URLs to cache:', urlsToCache);
-
 // Install event - cache assets
 self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing...');
+  console.info('[Service Worker] Installing...');
   (event as ExtendableEvent).waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Caching app shell');
+      console.info('[Service Worker] Caching app shell');
       return cache.addAll(urlsToCache);
     }),
   );
@@ -68,13 +64,13 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('[Service Worker] Activating...');
+  console.info('[Service Worker] Activating...');
   (event as ExtendableEvent).waitUntil(
     caches.keys().then((cacheNames) =>
       Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-            console.log('[Service Worker] Deleting old cache:', cacheName);
+            console.info('[Service Worker] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         }),

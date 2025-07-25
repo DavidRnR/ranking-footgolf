@@ -13,9 +13,19 @@ const themeStyle = `
       justify-content: center;
       color: var(--color-text);
       transition: background-color 0.3s ease;
+      /* Remove default button styles */
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
     }
 
-    .theme-toggle:hover {
+    .theme-toggle:hover,
+    .theme-toggle:focus,
+    .theme-toggle:active {
       background-color: var(--color-table-hover);
     }
 
