@@ -1,104 +1,13 @@
-import { Player } from '../models/player';
+import { Player } from '@models/player';
+import { adoptStyles } from '@utils/styles';
+import rankingTableStyle from './rankingtable.css?inline';
 
 const $rankingTableTemplate = document.createElement('template');
 
-const rankingTableStyle = `
-  <style>
-    .table-container {
-      background-color: var(--color-table-bg);
-      border-radius: 0.5em;
-      padding: 1.25em;
-      margin: 0 1.25em;
-      overflow-x: auto;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1.25em;
-    }
-
-    th {
-      background-color: var(--color-table-header);
-      font-weight: bold;
-      color: var(--color-text);
-      font-size: 1.1rem;
-      white-space: nowrap;
-    }
-
-    th:first-child {
-      border-top-left-radius: 0.5em;
-    }
-
-    th:last-child {
-      border-top-right-radius: 0.5em;
-    }
-
-    tr:hover {
-      background-color: var(--color-table-hover);
-    }
-
-    tr:nth-child(even) {
-      background-color: var(--color-striped);
-    }
-
-    tr:nth-child(odd) {
-      background-color: var(--color-table-bg);
-    }
-
-    th, td {
-      border-bottom: 0.0625em solid var(--color-border);
-      padding: 1.5em 0.7em;
-      color: var(--color-text);
-    }
-
-    .is-number .cell-content {
-      text-align: center;
-    }
-
-    .player-position {
-      font-weight: bold;
-      color: var(--color-primary);
-      font-size: 1.1em;
-      width: 100px;
-    }
-
-    .player-name .cell-content,
-    .player-points .cell-content {
-      color: var(--color-alternate);
-      font-weight: bold;
-      font-size: 1.1em;
-    }
-
-    .rank-up,
-    .rank-down,
-    .rank-neutral {
-      font-size: 1.3rem;
-      font-weight: bold;
-      line-height: 1.3rem;
-      text-align: center;
-    }
-
-    .rank-up {
-      color: var(--color-success);
-    }
-
-    .rank-down {
-      color: var(--color-danger);
-    }
-
-    .rank-neutral {
-      color: var(--color-border);
-    }
-  </style>
-`;
-
-$rankingTableTemplate.innerHTML =
-  `
+$rankingTableTemplate.innerHTML = `
   <div class="table-container">
     <table>
+      <caption class="sr-only">Ranking Nacional de Footgolf - Tabla de posiciones</caption>
       <thead>
         <tr id="table-header">
           <!-- Table headers will be populated by JavaScript -->
@@ -109,7 +18,7 @@ $rankingTableTemplate.innerHTML =
       </tbody>
     </table>
   </div>
-` + rankingTableStyle;
+`;
 
 export class RankingTable extends HTMLElement {
   allRows: Player[] = [];
@@ -120,6 +29,7 @@ export class RankingTable extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    adoptStyles(this.shadowRoot!, rankingTableStyle);
     this.shadowRoot!.appendChild($rankingTableTemplate.content.cloneNode(true));
 
     this.tableHeader = this.shadowRoot!.getElementById('table-header') as HTMLTableSectionElement;
@@ -156,7 +66,13 @@ export class RankingTable extends HTMLElement {
   generateTableHeaders() {
     this.tableConfig.headers.forEach((header) => {
       const th = document.createElement('th');
-      th.textContent = header;
+      if (header === '') {
+        // Empty header for changes column - add aria-label for accessibility
+        th.setAttribute('aria-label', 'Cambio de posición');
+        th.innerHTML = '<span class="sr-only">Cambio</span>';
+      } else {
+        th.textContent = header;
+      }
       this.tableHeader.appendChild(th);
     });
   }

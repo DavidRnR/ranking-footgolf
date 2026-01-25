@@ -1,97 +1,47 @@
+import { adoptStyles } from '@utils/styles';
+import searchStyle from './search.css?inline';
+
 const $searchTemplate = document.createElement('template');
 
-const searchStyle = `
-  <style>
-    .search-container {
-      display: flex;
-      align-items: center;
-      gap: 0.5em;
-      flex: 1;
-      max-width: 400px;
-      position: relative;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 0.5em 2.5em 0.5em 1em;
-      border: 1px solid var(--color-border);
-      border-radius: 0.5em;
-      background-color: var(--color-table-bg);
-      color: var(--color-text);
-      font-size: 1em;
-      transition: border-color 0.3s, background-color 0.3s;
-    }
-
-    .search-input:focus {
-      outline: none;
-      border-color: var(--color-primary);
-    }
-
-    .search-input::placeholder {
-      color: var(--color-text);
-      opacity: 0.7;
-    }
-
-    .search-icon,
-    .search-clear {
-      position: absolute;
-      right: 0.75em;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--color-text);
-      opacity: 0.7;
-      width: 16px;
-      height: 16px;
-    }
-
-    .search-clear {
-      cursor: pointer;
-    }
-
-    @media screen and (max-width: 1024px) {
-        .search-container {
-            max-width: 100%;
-        }
-   }
-  </style>
-`;
-
-$searchTemplate.innerHTML =
-  `
+$searchTemplate.innerHTML = `
   <div class="search-container">
+    <label for="search-input" class="sr-only">Buscar jugadores</label>
     <input
+      id="search-input"
       type="text"
       class="search-input"
       placeholder="Buscar..."
       maxlength="50"
+      aria-label="Buscar jugadores"
     />
     <span class="search-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/>
         </svg>
     </span>
-    <span class="search-clear" style="display: none;">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <button type="button" class="search-clear" style="display: none;" aria-label="Limpiar búsqueda">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
       </svg>
-    </span>
+    </button>
   </div>
-` + searchStyle;
+`;
 
 export class Search extends HTMLElement {
   searchInput: HTMLInputElement;
   debouncedSearch: () => void;
-  searchClear: HTMLSpanElement;
+  searchClear: HTMLButtonElement;
   searchIcon: HTMLSpanElement;
 
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    adoptStyles(this.shadowRoot!, searchStyle);
     this.shadowRoot!.appendChild($searchTemplate.content.cloneNode(true));
 
     this.searchInput = this.shadowRoot!.querySelector('.search-input') as HTMLInputElement;
     this.debouncedSearch = this.debounce(() => this.handleSearch(), 300);
-    this.searchClear = this.shadowRoot!.querySelector('.search-clear') as HTMLSpanElement;
+    this.searchClear = this.shadowRoot!.querySelector('.search-clear') as HTMLButtonElement;
     this.searchIcon = this.shadowRoot!.querySelector('.search-icon') as HTMLSpanElement;
     // Initialize search from URL if present
     this.initSearchFromURL();

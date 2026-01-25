@@ -1,4 +1,4 @@
-import { Player } from '@models/player';
+import { Player } from '../models/player';
 
 const SHEET_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_z4_nPfXouAPBrb5eP2u5JqNXsg1aQedaRk25l36isMLJy21nPlxeKE1GvOX75MFp5sCLXjc6BegJ/pub?output=csv';
@@ -23,6 +23,7 @@ export async function getRanking(): Promise<{ ranking: Player[]; lastUpdate: str
 
     // Store all rows for filtering
     const csvParsed = rows.slice(1).filter((row) => row.trim());
+
     const ranking = csvParsed.map((player) => {
       const columns = player.split(',');
       const [position, name, points, hcp, tournaments, origin, card15, pointsLost, card16, changes, lastUpdate] =

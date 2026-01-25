@@ -1,0 +1,51 @@
+.switch-view {
+  display: flex;
+  gap: 0.5em;
+  padding: 1em;
+}
+
+.view-button {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  padding: 0.5em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text);
+  transition: all 0.3s;
+}
+
+.view-button:hover {
+  background-color: var(--color-table-hover);
+}
+
+.view-button:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.view-button.active {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+@media screen and (max-width: 1024px) {
+  .view-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view-button {
+    transition: none;
+  }
+}
+
+.view-button svg {
+  width: 24px;
+  height: 24px;
+}

@@ -1,5 +1,6 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 // Determine base path based on environment
 const getBasePath = () => {
@@ -13,6 +14,7 @@ const getBasePath = () => {
 };
 
 export default defineConfig({
+  plugins: [tsconfigPaths()],
   base: getBasePath(),
   root: 'src',
   build: {

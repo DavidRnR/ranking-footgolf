@@ -1,161 +1,14 @@
-import { Player } from '../models/player';
+import { Player } from '@models/player';
+import { adoptStyles } from '@utils/styles';
+import rankingStyle from './ranking.css?inline';
 
 const $rankingTemplate = document.createElement('template');
 
-const rankingStyle = `
-  <style>
-    .players-list {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 1em;
-    }
-
-    .player-collapsed-content {
-      width: 100%;
-    }
-
-    .player-info {
-      display: grid;
-      grid-template-columns: auto 20px 1fr 90px;
-      align-items: center;
-      gap: 0.5em;
-    }
-
-    .player-points {
-      text-align: right;
-      margin-right: 0.5em;
-    }
-
-    .rank-up,
-    .rank-down,
-    .rank-neutral {
-      font-size: 1.3rem;
-      font-weight: bold;
-      line-height: 1.3rem;
-      text-align: center;
-    }
-
-    .rank-up {
-      color: var(--color-success);
-    }
-
-    .rank-down {
-      color: var(--color-danger);
-    }
-
-    .rank-neutral {
-      color: var(--color-border);
-    }
-
-    .player-name,
-    .player-points,
-    .player-position {
-      font-weight: bold;
-      font-size: 1.1rem;
-    }
-
-    .player-name {
-      padding-left: 1em;
-    }
-
-    .player-position,
-    .player-points {
-      color: var(--color-alternate);
-    }
-
-    .player-info-expanded {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5em;
-      padding: 1em;
-    }
-
-    .player-info-item {
-      display: flex;
-      align-items: center;
-      gap: 0.5em;
-      font-size: 1rem;
-    }
-
-    .player-info-item span:first-child {
-      color: var(--color-alternate);
-      font-weight: bold;
-    }
-
-    /* Skeleton loading styles */
-    .skeleton {
-      background: linear-gradient(
-        90deg,
-        var(--color-table-bg) 25%,
-        var(--color-table-hover) 50%,
-        var(--color-table-bg) 75%
-      );
-      background-size: 200% 100%;
-      animation: loading 1.5s infinite;
-      border-radius: 4px;
-      height: 60px;
-      width: 100%;
-      margin-bottom: 1em;
-    }
-
-    @keyframes loading {
-      0% {
-        background-position: 200% 0;
-      }
-      100% {
-        background-position: -200% 0;
-      }
-    }
-
-    @media (prefers-color-scheme: light) {
-      .skeleton {
-        background: linear-gradient(
-          90deg,
-          var(--color-table-bg) 25%,
-          var(--color-striped) 50%,
-          var(--color-table-bg) 75%
-        );
-      }
-    }
-
-    /* Styles for top 1 position */
-    .top-1{
-      font-size: 1.4rem;
-    }
-
-    @media screen and (max-width: 1024px) {
-      .players-list {
-        margin: 2em 0;
-      }
-
-      .player-info {
-        gap: 0.2em;
-      }
-
-      .player-position,
-      .player-name,
-      .player-points {
-        font-size: 0.8rem;
-      }
-
-      .player-name {
-        padding-left: 0;
-      }
-
-      /* Styles for top 1 position */
-      .top-1 {
-        font-size: 1rem;
-      }
-    }
-  </style>
-`;
-
-$rankingTemplate.innerHTML =
-  `
+$rankingTemplate.innerHTML = `
   <div class="players-list">
     <!-- Players will be dynamically added here -->
   </div>
-` + rankingStyle;
+`;
 
 export class Ranking extends HTMLElement {
   allPlayers: Player[] = [];
@@ -164,6 +17,7 @@ export class Ranking extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    adoptStyles(this.shadowRoot!, rankingStyle);
     this.shadowRoot!.appendChild($rankingTemplate.content.cloneNode(true));
     this.playersList = this.shadowRoot!.querySelector('.players-list') as HTMLDivElement;
     this.allPlayers = []; // Store all players for filtering

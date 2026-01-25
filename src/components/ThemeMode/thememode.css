@@ -1,0 +1,59 @@
+.theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5em;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text);
+  transition: background-color 0.3s ease;
+  /* Remove default button styles */
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  /* eslint-disable-next-line css/use-baseline */
+  user-select: none;
+}
+
+.theme-toggle:hover,
+.theme-toggle:active {
+  background-color: var(--color-table-hover);
+}
+
+.theme-toggle:focus {
+  background-color: var(--color-table-hover);
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media screen and (max-width: 1024px) {
+  .theme-toggle {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle {
+    transition: none;
+  }
+}
+
+.sun-icon,
+.moon-icon {
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.sun-icon {
+  display: none;
+}
+
+.moon-icon {
+  display: none;
+}

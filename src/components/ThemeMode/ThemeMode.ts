@@ -1,52 +1,9 @@
+import { adoptStyles } from '@utils/styles';
+import themeStyle from './thememode.css?inline';
+
 const $themeTemplate = document.createElement('template');
 
-const themeStyle = `
-  <style>
-    .theme-toggle {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0.5em;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--color-text);
-      transition: background-color 0.3s ease;
-      /* Remove default button styles */
-      outline: none;
-      -webkit-tap-highlight-color: transparent;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-
-    .theme-toggle:hover,
-    .theme-toggle:focus,
-    .theme-toggle:active {
-      background-color: var(--color-table-hover);
-    }
-
-    .sun-icon,
-    .moon-icon {
-      width: 1.5em;
-      height: 1.5em;
-    }
-
-    .sun-icon {
-      display: none;
-    }
-
-    .moon-icon {
-      display: none;
-    }
-  </style>
-`;
-
-$themeTemplate.innerHTML =
-  `
+$themeTemplate.innerHTML = `
   <button id="btn-theme-toggle" class="theme-toggle" aria-label="Toggle theme" title="Tema">
     <svg
       class="sun-icon"
@@ -85,7 +42,7 @@ $themeTemplate.innerHTML =
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
     </svg>
   </button>
-` + themeStyle;
+`;
 
 export class ThemeMode extends HTMLElement {
   sunIcon: SVGSVGElement;
@@ -94,6 +51,7 @@ export class ThemeMode extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    adoptStyles(this.shadowRoot!, themeStyle);
     this.shadowRoot!.appendChild($themeTemplate.content.cloneNode(true));
 
     // Get the theme toggle button

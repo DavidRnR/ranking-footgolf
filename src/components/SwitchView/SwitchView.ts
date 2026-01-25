@@ -1,47 +1,10 @@
-import { RankingView } from '../models/app';
+import { RankingView } from '@models/app';
+import { adoptStyles } from '@utils/styles';
+import switchViewStyle from './switchview.css?inline';
 
 const $switchViewTemplate = document.createElement('template');
 
-const switchViewStyle = `
-  <style>
-    .switch-view {
-      display: flex;
-      gap: 0.5em;
-      padding: 1em;
-    }
-
-    .view-button {
-      background: none;
-      border: 1px solid var(--color-border);
-      border-radius: 50%;
-      padding: 0.5em;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--color-text);
-      transition: all 0.3s;
-    }
-
-    .view-button:hover {
-      background-color: var(--color-table-hover);
-    }
-
-    .view-button.active {
-      background-color: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
-    }
-
-    .view-button svg {
-      width: 24px;
-      height: 24px;
-    }
-  </style>
-`;
-
-$switchViewTemplate.innerHTML =
-  `
+$switchViewTemplate.innerHTML = `
   <div class="switch-view">
     <button class="view-button" data-view="list" aria-label="List view" title="Lista">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -61,7 +24,7 @@ $switchViewTemplate.innerHTML =
       </svg>
     </button>
   </div>
-` + switchViewStyle;
+`;
 
 export class SwitchView extends HTMLElement {
   buttons: NodeListOf<HTMLButtonElement>;
@@ -70,6 +33,7 @@ export class SwitchView extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    adoptStyles(this.shadowRoot!, switchViewStyle);
     this.shadowRoot!.appendChild($switchViewTemplate.content.cloneNode(true));
 
     this.buttons = this.shadowRoot!.querySelectorAll('.view-button') as NodeListOf<HTMLButtonElement>;

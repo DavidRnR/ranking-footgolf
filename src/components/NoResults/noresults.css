@@ -1,0 +1,27 @@
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--color-text);
+  margin: 1em 0;
+}
+
+.empty-state svg {
+  width: 24px;
+  height: 24px;
+}
+
+@media (max-width: 768px) {
+  .empty-state {
+    font-size: 0.9rem;
+  }
+
+  .empty-state svg {
+    width: 18px;
+    height: 18px;
+  }
+}

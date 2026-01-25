@@ -46,6 +46,7 @@ body {
   margin: 0;
   background-color: var(--color-bg);
   color: var(--color-text);
+  line-height: 1.6;
   transition:
     background-color var(--transition-duration) ease,
     color var(--transition-duration) ease;
@@ -64,6 +65,12 @@ header {
   justify-content: flex-end;
   gap: 2em;
   transition: background-color var(--transition-duration) ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  header {
+    transition: none;
+  }
 }
 
 .title {
@@ -89,6 +96,12 @@ header {
   height: auto;
   display: block;
   transition: filter var(--transition-duration) ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-img {
+    transition: none;
+  }
 }
 
 .logo-img.logo-filtered-blue {
