@@ -11,8 +11,8 @@
 }
 
 .empty-state svg {
-  width: 24px;
-  height: 24px;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 @media (max-width: 768px) {
@@ -21,7 +21,7 @@
   }
 
   .empty-state svg {
-    width: 18px;
-    height: 18px;
+    width: 1.125rem;
+    height: 1.125rem;
   }
 }

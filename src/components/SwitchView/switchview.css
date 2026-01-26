@@ -34,8 +34,8 @@
 
 @media screen and (max-width: 1024px) {
   .view-button {
-    min-width: 44px;
-    min-height: 44px;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
   }
 }
 
@@ -46,6 +46,6 @@
 }
 
 .view-button svg {
-  width: 24px;
-  height: 24px;
+  width: 1.5rem;
+  height: 1.5rem;
 }
