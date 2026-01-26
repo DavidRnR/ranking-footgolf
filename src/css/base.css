@@ -10,6 +10,7 @@ body {
 
 :root {
   color-scheme: light dark;
+  --app-font: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   --color-bg: light-dark(#ffffff, #1a1a1a);
   --color-text: light-dark(#030712, #fefefe);
   --color-table-bg: light-dark(#fefefe, #2a2a2a);
@@ -33,16 +34,7 @@ body {
 }
 
 body {
-  font-family:
-    'Outfit',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    sans-serif;
+  font-family: var(--app-font);
   margin: 0;
   background-color: var(--color-bg);
   color: var(--color-text);

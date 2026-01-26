@@ -86,13 +86,6 @@
 }
 
 @media screen and (max-width: 1024px) {
-  .search-clear {
-    min-width: 44px;
-    min-height: 44px;
-  }
-}
-
-@media screen and (max-width: 1024px) {
   .search-container {
     max-width: 100%;
   }
