@@ -1,6 +1,6 @@
 import { Player } from '@models/player';
 import { adoptStyles } from '@utils/styles';
-import rankingTableStyle from './rankingtable.css?inline';
+import rankingTableStyle from './rankingTable.css?inline';
 
 const $rankingTableTemplate = document.createElement('template');
 
