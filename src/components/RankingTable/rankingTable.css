@@ -2,7 +2,6 @@
   background-color: var(--color-table-bg);
   border-radius: 0.5em;
   padding: 1.25em;
-  margin: 0 1.25em;
   overflow-x: auto;
   max-width: 1400px;
   margin: 0 auto;
@@ -65,27 +64,6 @@ td {
   color: var(--color-alternate);
   font-weight: bold;
   font-size: 1.1em;
-}
-
-.rank-up,
-.rank-down,
-.rank-neutral {
-  font-size: 1.3rem;
-  font-weight: bold;
-  line-height: 1.3rem;
-  text-align: center;
-}
-
-.rank-up {
-  color: var(--color-success);
-}
-
-.rank-down {
-  color: var(--color-danger);
-}
-
-.rank-neutral {
-  color: var(--color-border);
 }
 
 .sr-only {

@@ -20,27 +20,6 @@
   margin-right: 0.5em;
 }
 
-.rank-up,
-.rank-down,
-.rank-neutral {
-  font-size: 1.3rem;
-  font-weight: bold;
-  line-height: 1.3rem;
-  text-align: center;
-}
-
-.rank-up {
-  color: var(--color-success);
-}
-
-.rank-down {
-  color: var(--color-danger);
-}
-
-.rank-neutral {
-  color: var(--color-border);
-}
-
 .player-name,
 .player-points,
 .player-position {

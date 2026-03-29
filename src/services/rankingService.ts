@@ -6,9 +6,9 @@ const SHEET_URL =
 function parseStringToNumber(position: string, decimal = false): number | string | null {
   try {
     if (decimal) {
-      return parseFloat(position).toFixed(2);
+      return Number.parseFloat(position).toFixed(2);
     }
-    return parseInt(position, 10);
+    return Number.parseInt(position, 10);
   } catch {
     return null;
   }
@@ -59,6 +59,6 @@ export async function getRanking(): Promise<{ ranking: Player[]; lastUpdate: str
     };
   } catch (error) {
     console.error('Error loading CSV:', error);
-    return Promise.reject(error);
+    throw error;
   }
 }

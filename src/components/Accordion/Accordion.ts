@@ -32,7 +32,7 @@ export class Accordion extends HTMLElement {
     this.icon = this.shadowRoot!.querySelector('.accordion-icon') as HTMLElement;
 
     // Generate unique ID for aria-controls
-    const contentId = `accordion-content-${Math.random().toString(36).substr(2, 9)}`;
+    const contentId = `accordion-content-${Math.random().toString(36).slice(2, 11)}`;
     this.content.id = contentId;
     this.header.setAttribute('aria-controls', contentId);
 
@@ -67,4 +67,4 @@ export class Accordion extends HTMLElement {
   }
 }
 
-window.customElements.define('app-accordion', Accordion);
+globalThis.customElements.define('app-accordion', Accordion);

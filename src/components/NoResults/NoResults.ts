@@ -22,4 +22,4 @@ export class NoResults extends HTMLElement {
   }
 }
 
-customElements.define('app-no-results', NoResults);
+globalThis.customElements.define('app-no-results', NoResults);

@@ -1,3 +1,4 @@
+import { RankingChange } from '@components/RankingChange/RankingChange';
 import { Player } from '@models/player';
 import { adoptStyles } from '@utils/styles';
 import rankingTableStyle from './rankingTable.css?inline';
@@ -64,7 +65,7 @@ export class RankingTable extends HTMLElement {
   }
 
   generateTableHeaders() {
-    this.tableConfig.headers.forEach((header) => {
+    for (const header of this.tableConfig.headers) {
       const th = document.createElement('th');
       if (header === '') {
         // Empty header for changes column - add aria-label for accessibility
@@ -74,7 +75,7 @@ export class RankingTable extends HTMLElement {
         th.textContent = header;
       }
       this.tableHeader.appendChild(th);
-    });
+    }
   }
 
   renderNoResults() {
@@ -96,10 +97,10 @@ export class RankingTable extends HTMLElement {
       return;
     }
 
-    rowsPlayers.forEach((player) => {
+    for (const player of rowsPlayers) {
       const tr = document.createElement('tr');
 
-      this.tableConfig.columns.forEach((column) => {
+      for (const column of this.tableConfig.columns) {
         const td = document.createElement('td');
         const divContent = document.createElement('div');
 
@@ -107,14 +108,9 @@ export class RankingTable extends HTMLElement {
         divContent.className = isChanges ? 'cell-content is-position' : 'cell-content';
 
         if (isChanges) {
-          const changesArrow =
-            player.changes > 0
-              ? `<span class="rank-up">↑</span>`
-              : player.changes < 0
-                ? `<span class="rank-down">↓</span>`
-                : `<span class="rank-neutral">•</span>`;
-
-          divContent.innerHTML = changesArrow;
+          const rankingChange = document.createElement('app-ranking-change') as RankingChange;
+          rankingChange.value = player.changes;
+          divContent.appendChild(rankingChange);
         } else {
           divContent.textContent = player[column.key as keyof Player].toString();
         }
@@ -125,10 +121,10 @@ export class RankingTable extends HTMLElement {
 
         td.appendChild(divContent);
         tr.appendChild(td);
-      });
+      }
 
       this.tableBody.appendChild(tr);
-    });
+    }
   }
 
   filterPlayers(searchTerm: string) {
@@ -144,4 +140,4 @@ export class RankingTable extends HTMLElement {
   }
 }
 
-window.customElements.define('app-ranking-table', RankingTable);
+globalThis.customElements.define('app-ranking-table', RankingTable);

@@ -90,18 +90,18 @@ export class Search extends HTMLElement {
 
   // Function to update URL with search parameter
   updateSearchInURL(searchTerm: string) {
-    const url = new URL(window.location.href);
+    const url = new URL(globalThis.location.href);
     if (searchTerm) {
       url.searchParams.set('search', searchTerm);
     } else {
       url.searchParams.delete('search');
     }
-    window.history.replaceState({}, '', url);
+    globalThis.history.replaceState({}, '', url);
   }
 
   getSearchTerm() {
     // Get search term from URL
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(globalThis.location.search);
     const searchTerm = urlParams.get('search');
     return searchTerm || '';
   }
@@ -118,4 +118,4 @@ export class Search extends HTMLElement {
   }
 }
 
-window.customElements.define('app-search', Search);
+globalThis.customElements.define('app-search', Search);

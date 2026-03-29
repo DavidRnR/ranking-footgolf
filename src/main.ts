@@ -1,14 +1,15 @@
 import './components/Accordion/Accordion';
 import './components/NoResults/NoResults';
 import './components/Ranking/Ranking';
-import './components/RankingTable/RankingTable';
-import './components/Search/Search';
-import './components/SwitchView/SwitchView';
-import './components/ThemeMode/ThemeMode';
 import type { Ranking } from './components/Ranking/Ranking';
+import './components/RankingChange/RankingChange';
+import './components/RankingTable/RankingTable';
 import type { RankingTable } from './components/RankingTable/RankingTable';
+import './components/Search/Search';
 import type { Search } from './components/Search/Search';
+import './components/SwitchView/SwitchView';
 import type { SwitchView } from './components/SwitchView/SwitchView';
+import './components/ThemeMode/ThemeMode';
 import type { ThemeMode } from './components/ThemeMode/ThemeMode';
 import { RankingView } from './models/app';
 import { Player } from './models/player';
@@ -28,6 +29,41 @@ function initTheme() {
   themeMode.initTheme();
 }
 
+function showTableView(searchTerm: string, existingTable: Element | null, existingList: Element | null) {
+  // Remove list if exists
+  if (existingList) {
+    existingList.remove();
+  }
+
+  // Create and initialize table if it doesn't exist
+  if (!existingTable) {
+    $tableComponent = document.createElement('app-ranking-table') as RankingTable;
+    $tableComponent.generateTableHeaders();
+    $tableComponent.setRows(ranking);
+    if (searchTerm) {
+      $tableComponent.filterPlayers(searchTerm);
+    }
+    $container.appendChild($tableComponent);
+  }
+}
+
+function showListView(searchTerm: string, existingTable: Element | null, existingList: Element | null) {
+  // Remove table if exists
+  if (existingTable) {
+    existingTable.remove();
+  }
+
+  // Create and initialize list if it doesn't exist
+  if (!existingList) {
+    $rankingComponent = document.createElement('app-ranking') as Ranking;
+    $rankingComponent.setPlayers(ranking);
+    if (searchTerm) {
+      $rankingComponent.filterPlayers(searchTerm);
+    }
+    $container.appendChild($rankingComponent);
+  }
+}
+
 function handleChangeView(view: RankingView) {
   const existingTable = $container.querySelector('app-ranking-table');
   const existingList = $container.querySelector('app-ranking');
@@ -35,37 +71,11 @@ function handleChangeView(view: RankingView) {
   const searchTerm = $searchComponent.getSearchTerm();
 
   if (view === RankingView.TABLE) {
-    // Remove list if exists
-    if (existingList) {
-      existingList.remove();
-    }
-
-    // Create and initialize table if it doesn't exist
-    if (!existingTable) {
-      $tableComponent = document.createElement('app-ranking-table') as RankingTable;
-      $tableComponent.generateTableHeaders();
-      $tableComponent.setRows(ranking);
-      if (searchTerm) {
-        $tableComponent.filterPlayers(searchTerm);
-      }
-      $container.appendChild($tableComponent);
-    }
-  } else {
-    // Remove table if exists
-    if (existingTable) {
-      existingTable.remove();
-    }
-
-    // Create and initialize list if it doesn't exist
-    if (!existingList) {
-      $rankingComponent = document.createElement('app-ranking') as Ranking;
-      $rankingComponent.setPlayers(ranking);
-      if (searchTerm) {
-        $rankingComponent.filterPlayers(searchTerm);
-      }
-      $container.appendChild($rankingComponent);
-    }
+    showTableView(searchTerm, existingTable, existingList);
+    return;
   }
+
+  showListView(searchTerm, existingTable, existingList);
 }
 
 async function loadRanking() {

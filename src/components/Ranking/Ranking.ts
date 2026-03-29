@@ -50,53 +50,58 @@ export class Ranking extends HTMLElement {
       return;
     }
 
-    players.forEach(({ position, name, points, hcp, tournaments, origin, card15, pointsLost, card16, changes }) => {
-      const accordion = document.createElement('app-accordion');
+    for (const player of players) {
+      this.playersList.appendChild(this.createPlayerAccordion(player));
+    }
+  }
 
-      // Create collapsed content (player name)
-      const collapsedContent = document.createElement('div');
-      collapsedContent.slot = 'collapsed';
-      collapsedContent.classList.add('player-collapsed-content');
+  private createPlayerAccordion(player: Player): HTMLElement {
+    const accordion = document.createElement('app-accordion');
+    accordion.appendChild(this.createCollapsedContent(player));
+    accordion.appendChild(this.createExpandedContent(player));
+    return accordion;
+  }
 
-      const top1 = position === 1;
+  private createCollapsedContent({ position, name, points, changes }: Player): HTMLDivElement {
+    const collapsedContent = document.createElement('div');
+    collapsedContent.slot = 'collapsed';
+    collapsedContent.classList.add('player-collapsed-content');
 
-      const changesArrow =
-        changes > 0
-          ? `<span class="rank-up">↑</span>`
-          : changes < 0
-            ? `<span class="rank-down">↓</span>`
-            : `<span class="rank-neutral">•</span>`;
+    const top1 = position === 1;
 
-      collapsedContent.innerHTML = `
-        <div class="player-info">
-          <span class="player-position ${top1 ? 'top-1' : ''}">${position}</span>
-          ${changesArrow}
-          <span class="player-name ${top1 ? 'top-1' : ''}">${name}</span>
-          <span class="player-points ${top1 ? 'top-1' : ''}">${points}</span>
-        </div>
-      `;
+    collapsedContent.innerHTML = `
+      <div class="player-info">
+        <span class="player-position ${top1 ? 'top-1' : ''}">${position}</span>
+        <app-ranking-change></app-ranking-change>
+        <span class="player-name ${top1 ? 'top-1' : ''}">${name}</span>
+        <span class="player-points ${top1 ? 'top-1' : ''}">${points}</span>
+      </div>
+    `;
 
-      // Create expanded content (empty for now)
-      const expandedContent = document.createElement('div');
-      expandedContent.slot = 'expanded';
-      expandedContent.innerHTML = `
-        <div class="player-info-expanded">
-          <div class="player-info-item"><span>HCP:</span> <span>${hcp}</span></div>
-          <div class="player-info-item"><span>Torneos:</span> <span>${tournaments}</span></div>
-          <div class="player-info-item"><span>Procedencia:</span> <span>${origin}</span></div>
-          <div class="player-info-item"><span>Tarjeta 15:</span> <span>${card15}</span></div>
-          <div class="player-info-item"><span>Puntos que pierde:</span> <span>${pointsLost}</span></div>
-          <div class="player-info-item"><span>Tarjeta 16:</span> <span>${card16}</span></div>
-        </div>
-      `;
+    const rankingChangeElement = collapsedContent.querySelector<HTMLElement & { value: number }>('app-ranking-change');
 
-      // Add content to accordion
-      accordion.appendChild(collapsedContent);
-      accordion.appendChild(expandedContent);
+    if (rankingChangeElement) {
+      rankingChangeElement.value = changes;
+    }
 
-      // Add accordion to the list
-      this.playersList.appendChild(accordion);
-    });
+    return collapsedContent;
+  }
+
+  private createExpandedContent({ hcp, tournaments, origin, card15, pointsLost, card16 }: Player): HTMLDivElement {
+    const expandedContent = document.createElement('div');
+    expandedContent.slot = 'expanded';
+    expandedContent.innerHTML = `
+      <div class="player-info-expanded">
+        <div class="player-info-item"><span>HCP:</span> <span>${hcp}</span></div>
+        <div class="player-info-item"><span>Torneos:</span> <span>${tournaments}</span></div>
+        <div class="player-info-item"><span>Procedencia:</span> <span>${origin}</span></div>
+        <div class="player-info-item"><span>Tarjeta 15:</span> <span>${card15}</span></div>
+        <div class="player-info-item"><span>Puntos que pierde:</span> <span>${pointsLost}</span></div>
+        <div class="player-info-item"><span>Tarjeta 16:</span> <span>${card16}</span></div>
+      </div>
+    `;
+
+    return expandedContent;
   }
 
   filterPlayers(searchTerm: string) {
@@ -113,4 +118,4 @@ export class Ranking extends HTMLElement {
   }
 }
 
-customElements.define('app-ranking', Ranking);
+globalThis.customElements.define('app-ranking', Ranking);

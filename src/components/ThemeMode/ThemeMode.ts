@@ -82,7 +82,7 @@ export class ThemeMode extends HTMLElement {
   }
 
   initTheme() {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const prefersDark = globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
 
     // Get theme from localStorage or use system preference
     const savedTheme = localStorage.getItem('theme');
@@ -105,4 +105,4 @@ export class ThemeMode extends HTMLElement {
   }
 }
 
-window.customElements.define('app-theme-mode', ThemeMode);
+globalThis.customElements.define('app-theme-mode', ThemeMode);

@@ -1,0 +1,22 @@
+.rank-up,
+.rank-down,
+.rank-neutral {
+  display: inline-block;
+  font-size: 1.3rem;
+  font-weight: bold;
+  line-height: 1.3rem;
+  text-align: center;
+  width: 20px;
+}
+
+.rank-up {
+  color: var(--color-success);
+}
+
+.rank-down {
+  color: var(--color-danger);
+}
+
+.rank-neutral {
+  color: var(--color-border);
+}

@@ -36,16 +36,16 @@ export class SwitchView extends HTMLElement {
     adoptStyles(this.shadowRoot!, switchViewStyle);
     this.shadowRoot!.appendChild($switchViewTemplate.content.cloneNode(true));
 
-    this.buttons = this.shadowRoot!.querySelectorAll('.view-button') as NodeListOf<HTMLButtonElement>;
+    this.buttons = this.shadowRoot!.querySelectorAll('.view-button');
     this.currentView = RankingView.LIST; // Default view
 
     // Add click listeners
-    this.buttons.forEach((button) => {
+    for (const button of this.buttons) {
       button.addEventListener('click', () => {
         const view = (button.dataset.view || RankingView.LIST) as RankingView;
         this.switchView(view);
       });
-    });
+    }
 
     // Set initial active state
     this.updateActiveButton();
@@ -68,13 +68,13 @@ export class SwitchView extends HTMLElement {
   }
 
   updateActiveButton() {
-    this.buttons.forEach((button) => {
+    for (const button of this.buttons) {
       if (button.dataset.view === this.currentView) {
         button.classList.add('active');
       } else {
         button.classList.remove('active');
       }
-    });
+    }
   }
 }
 
