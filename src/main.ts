@@ -24,6 +24,8 @@ const $switchViewComponent = document.querySelector('app-switch-view') as Switch
 const $searchComponent = document.querySelector('app-search') as Search;
 
 // Matches the breakpoint in responsive.css, where the table and the view switch are hidden.
+// The list/table choice stays in memory. Only `?search=` is in the URL: on a phone the
+// table is hidden, and a view param would make Back toggle layout instead of leaving.
 const NARROW_LIST_QUERY = '(max-width: 1366px)';
 
 function initTheme() {

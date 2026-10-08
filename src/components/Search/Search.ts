@@ -1,4 +1,11 @@
 import { adoptStyles } from '@utils/styles';
+import {
+  SEARCH_HISTORY_PAUSE_MS,
+  SearchHistory,
+  applySearchParam,
+  readSearchParam,
+  type HistoryDecision,
+} from '@utils/searchHistory';
 import searchStyle from './search.css?inline';
 
 const $searchTemplate = document.createElement('template');
@@ -29,9 +36,11 @@ $searchTemplate.innerHTML = `
 
 export class Search extends HTMLElement {
   searchInput: HTMLInputElement;
-  debouncedSearch: () => void;
   searchClear: HTMLButtonElement;
   searchIcon: HTMLSpanElement;
+  private readonly history: SearchHistory;
+  private pauseTimer: ReturnType<typeof setTimeout> | undefined;
+  private composing = false;
 
   constructor() {
     super();
@@ -40,32 +49,110 @@ export class Search extends HTMLElement {
     this.shadowRoot!.appendChild($searchTemplate.content.cloneNode(true));
 
     this.searchInput = this.shadowRoot!.querySelector('.search-input') as HTMLInputElement;
-    this.debouncedSearch = this.debounce(() => this.handleSearch(), 300);
     this.searchClear = this.shadowRoot!.querySelector('.search-clear') as HTMLButtonElement;
     this.searchIcon = this.shadowRoot!.querySelector('.search-icon') as HTMLSpanElement;
-    // Initialize search from URL if present
-    this.initSearchFromURL();
 
-    // Add search functionality with debounce
-    this.searchInput.addEventListener('input', this.debouncedSearch);
-    // Add search clear functionality
+    const initial = readSearchParam(globalThis.location.search);
+    this.history = new SearchHistory(initial);
+    this.searchInput.value = initial;
+    this.canonicalizeUrl(initial);
+    this.toggleSearchIcon();
+
+    this.searchInput.addEventListener('compositionstart', () => {
+      this.composing = true;
+    });
+    this.searchInput.addEventListener('compositionend', () => {
+      this.composing = false;
+      this.onInput();
+    });
+    this.searchInput.addEventListener('input', () => {
+      if (!this.composing) {
+        this.onInput();
+      }
+    });
+    this.searchInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        this.commitNow(this.searchInput.value);
+      }
+    });
     this.searchClear.addEventListener('click', () => {
-      this.searchInput.value = '';
-      this.handleSearch();
+      this.commitNow('');
+    });
+    globalThis.addEventListener('popstate', () => {
+      this.onPopState();
     });
   }
 
-  // Function to debounce search input
-  debounce(func: (...args: unknown[]) => void, wait: number) {
-    let timeout: ReturnType<typeof setTimeout> | undefined;
-    return function executedFunction(...args: unknown[]) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
+  private canonicalizeUrl(term: string) {
+    const canonical = applySearchParam(globalThis.location.href, term);
+    if (canonical !== globalThis.location.href) {
+      globalThis.history.replaceState({ search: term }, '', canonical);
+    }
+  }
+
+  private onInput() {
+    this.apply(this.history.onType(this.searchInput.value));
+    this.toggleSearchIcon();
+    this.schedulePause();
+  }
+
+  /** Clear and Enter commit immediately so the list updates without waiting out the pause. */
+  private commitNow(value: string) {
+    this.searchInput.value = value;
+    this.apply(this.history.onType(value));
+    this.finishPause();
+  }
+
+  private schedulePause() {
+    clearTimeout(this.pauseTimer);
+    this.pauseTimer = setTimeout(() => {
+      this.finishPause();
+    }, SEARCH_HISTORY_PAUSE_MS);
+  }
+
+  private finishPause() {
+    clearTimeout(this.pauseTimer);
+    this.history.onPause();
+    this.toggleSearchIcon();
+    this.emitSearch();
+  }
+
+  private apply(decision: HistoryDecision) {
+    if (decision.write === 'none') {
+      return;
+    }
+
+    if (decision.write === 'discard') {
+      globalThis.history.back();
+      return;
+    }
+
+    const url = applySearchParam(globalThis.location.href, decision.term);
+    const state = { search: decision.term };
+    if (decision.write === 'push') {
+      globalThis.history.pushState(state, '', url);
+      return;
+    }
+
+    globalThis.history.replaceState(state, '', url);
+  }
+
+  private onPopState() {
+    clearTimeout(this.pauseTimer);
+    const term = this.history.onPopState(readSearchParam(globalThis.location.search));
+    this.searchInput.value = term;
+    this.toggleSearchIcon();
+    this.emitSearch();
+  }
+
+  private emitSearch() {
+    this.dispatchEvent(
+      new CustomEvent('search', {
+        detail: { searchTerm: this.history.term },
+        bubbles: true,
+        composed: true,
+      }),
+    );
   }
 
   toggleSearchIcon() {
@@ -73,46 +160,6 @@ export class Search extends HTMLElement {
     this.searchIcon.style.display = this.searchInput.value ? 'none' : 'block';
   }
 
-  // Function to handle search filtering
-  handleSearch() {
-    const searchTerm = this.searchInput.value.toLowerCase().trim();
-    this.updateSearchInURL(searchTerm);
-    this.toggleSearchIcon();
-
-    this.dispatchEvent(
-      new CustomEvent('search', {
-        detail: { searchTerm },
-        bubbles: true,
-        composed: true,
-      }),
-    );
-  }
-
-  // Function to update URL with search parameter
-  updateSearchInURL(searchTerm: string) {
-    const url = new URL(globalThis.location.href);
-    if (searchTerm) {
-      url.searchParams.set('search', searchTerm);
-    } else {
-      url.searchParams.delete('search');
-    }
-    globalThis.history.replaceState({}, '', url);
-  }
-
-  getSearchTerm() {
-    // Get search term from URL
-    const urlParams = new URLSearchParams(globalThis.location.search);
-    const searchTerm = urlParams.get('search');
-    return searchTerm || '';
-  }
-
-  // Function to initialize search from URL
-  initSearchFromURL() {
-    this.searchInput.value = this.getSearchTerm();
-    this.toggleSearchIcon();
-  }
-
-  // Getter for current search term
   get searchTerm() {
     return this.searchInput.value.trim();
   }

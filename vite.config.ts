@@ -29,6 +29,13 @@ export default defineConfig({
         clientsClaim: true,
         cleanupOutdatedCaches: true,
         navigateFallback: 'index.html',
+        // NavigationRoute matches pathname + search. `/^\//` keeps
+        // `/ranking-footgolf/?search=…` on the app shell (same rule as
+        // isAppShellNavigation in src/utils/searchHistory.ts).
+        navigateFallbackAllowlist: [/^\//],
+        // Precache lookup ignores `search` too, so a directory URL with that
+        // query still matches index.html. utm_ and fbclid stay ignored.
+        ignoreURLParametersMatching: [/^utm_/, /^fbclid$/, /^search$/],
         importScripts: ['legacy-sw-cleanup.js'],
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,json}'],
         runtimeCaching: [

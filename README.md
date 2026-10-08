@@ -54,6 +54,7 @@ Cuando `feature/vite_ts` ya no haga falta, hay que quitarla de `on.push.branches
 Tras la primera visita con conexión, la aplicación sigue disponible sin red. vite-plugin-pwa genera un service worker de Workbox que:
 
 - Precachea el HTML, el JavaScript y el CSS (con hash), los íconos y las imágenes
+- Sirve ese shell también en navegaciones con `?search=` (enlace directo, actualizar o atrás), en línea y sin red
 - Pide el CSV de Google Sheets con NetworkFirst: en línea usa los datos nuevos y, sin conexión, la última copia guardada
 - Guarda las fuentes de Google en caché para repetirlas offline
 - Se actualiza solo (`autoUpdate`) y borra las cachés viejas del worker anterior (`footgolf-cache-*`)
