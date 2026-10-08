@@ -22,6 +22,10 @@ export default defineConfig([
     languageOptions: { globals: globals.browser },
   },
   {
+    files: ['public/legacy-sw-cleanup.js'],
+    languageOptions: { globals: globals.serviceworker },
+  },
+  {
     files: ['**/*.json'],
     plugins: { json },
     language: 'json/json',

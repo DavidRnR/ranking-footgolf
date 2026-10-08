@@ -1,6 +1,5 @@
-import { resolve } from 'path';
-import { defineConfig } from 'vite';
-import tsconfigPaths from 'vite-tsconfig-paths';
+import { VitePWA } from 'vite-plugin-pwa';
+import { defineConfig } from 'vitest/config';
 
 // Determine base path based on environment
 const getBasePath = () => {
@@ -13,38 +12,93 @@ const getBasePath = () => {
   return '/';
 };
 
+const SHEET_CSV = /^https:\/\/docs\.google\.com\/spreadsheets\/.*output=csv/;
+
 export default defineConfig({
-  plugins: [tsconfigPaths()],
+  plugins: [
+    VitePWA({
+      // Unit tests load this config and do not need a service worker.
+      disable: process.env.VITEST === 'true',
+      registerType: 'autoUpdate',
+      injectRegister: 'auto',
+      // Same script URL as the previous hand-written worker, so installed PWAs update in place.
+      filename: 'sw.js',
+      manifest: false,
+      workbox: {
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
+        navigateFallback: 'index.html',
+        // NavigationRoute matches pathname + search. `/^\//` keeps
+        // `/ranking-footgolf/?search=…` on the app shell (same rule as
+        // isAppShellNavigation in src/utils/searchHistory.ts).
+        navigateFallbackAllowlist: [/^\//],
+        // Precache lookup ignores `search` too, so a directory URL with that
+        // query still matches index.html. utm_ and fbclid stay ignored.
+        ignoreURLParametersMatching: [/^utm_/, /^fbclid$/, /^search$/],
+        importScripts: ['legacy-sw-cleanup.js'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,json}'],
+        runtimeCaching: [
+          {
+            urlPattern: SHEET_CSV,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'ranking-sheet',
+              networkTimeoutSeconds: 4,
+              expiration: {
+                maxEntries: 4,
+                maxAgeSeconds: 60 * 60 * 24 * 7,
+              },
+              cacheableResponse: {
+                statuses: [200],
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.(?:googleapis|gstatic)\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts',
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 60 * 60 * 24 * 365,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
+      },
+    }),
+  ],
   base: getBasePath(),
+  resolve: {
+    tsconfigPaths: true,
+  },
   root: 'src',
   build: {
     outDir: '../dist',
     emptyOutDir: true,
     cssCodeSplit: true,
     target: 'esnext',
-    modulePreload: false, // This is to avoid the issue with the service worker about preloading data
-    rollupOptions: {
-      input: {
-        main: resolve('src/index.html'),
-        sw: resolve('src/sw.ts'),
-      },
+    rolldownOptions: {
       output: {
-        entryFileNames: (chunkInfo) => {
-          // Service worker should be in root without hash
-          if (chunkInfo.name === 'sw') {
-            return 'sw.js';
-          }
-          return 'js/[name].[hash].js';
-        },
+        entryFileNames: 'js/[name].[hash].js',
         chunkFileNames: 'js/[name].[hash].js',
         assetFileNames: (assetInfo) => {
-          if (assetInfo.names && assetInfo.names[assetInfo.names.length - 1].endsWith('.css')) {
-            return `css/[name].[hash].css`;
+          const name = assetInfo.names?.at(-1) ?? '';
+          if (name.endsWith('.css')) {
+            return 'css/[name].[hash].css';
           }
-          return `assets/[ext]/[name].[hash].[ext]`;
+          return 'assets/[ext]/[name].[hash].[ext]';
         },
       },
     },
   },
   publicDir: '../public',
+  test: {
+    environment: 'node',
+    include: ['**/*.{test,spec}.ts'],
+  },
 });

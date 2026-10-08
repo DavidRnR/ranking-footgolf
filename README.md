@@ -17,7 +17,7 @@ Una Aplicación Web Progresiva (PWA) que muestra y gestiona el ranking nacional 
 
 - Desarrollado con TypeScript y Vite
 - Utiliza la API de Google Sheets para los datos
-- Implementa Service Workers para soporte offline
+- Implementa una PWA con vite-plugin-pwa (Workbox) para soporte offline
 - Diseño responsive usando CSS moderno
 - Características PWA incluyendo:
   - Instalable en dispositivos
@@ -29,12 +29,19 @@ Una Aplicación Web Progresiva (PWA) que muestra y gestiona el ranking nacional 
 1. Clonar el repositorio
 2. Instalar dependencias: `npm install`
 3. Para desarrollo: `npm run dev`
-4. Para build: `npm run build`
-5. Para preview: `npm run preview`
+4. Para tests: `npm test`
+5. Para build: `npm run build`
+6. Para preview: `npm run preview`
 
 ## Despliegue
 
-La aplicación se despliega automáticamente a GitHub Pages cuando se hace push a la rama `main`.
+La aplicación se publica en [GitHub Pages](https://davidrnr.github.io/ranking-footgolf/) con el workflow `.github/workflows/deploy.yml`.
+
+- Un push a `main` despliega el sitio. Esa es la rama de publicación a largo plazo.
+- Hasta que `feature/vite_ts` se fusione en `main`, un push a `feature/vite_ts` también despliega, para que el sitio en producción siga actualizándose.
+- Los pull requests hacia `main` o `feature/vite_ts` ejecutan la comprobación de tipos, el lint, los tests y el build, y no despliegan. Los pushes que despliegan ejecutan los mismos pasos antes de publicar.
+
+Cuando `feature/vite_ts` ya no haga falta, hay que quitarla de `on.push.branches` y de la condición del job `deploy`.
 
 ### Despliegue Manual
 
@@ -44,11 +51,13 @@ La aplicación se despliega automáticamente a GitHub Pages cuando se hace push 
 
 ## Soporte Offline
 
-La aplicación funciona sin conexión gracias a los Service Workers. Los siguientes recursos se almacenan en caché:
+Tras la primera visita con conexión, la aplicación sigue disponible sin red. vite-plugin-pwa genera un service worker de Workbox que:
 
-- Todos los archivos esenciales de la aplicación
-- Recursos (íconos e imágenes)
-- Fuentes de Google
+- Precachea el HTML, el JavaScript y el CSS (con hash), los íconos y las imágenes
+- Sirve ese shell también en navegaciones con `?search=` (enlace directo, actualizar o atrás), en línea y sin red
+- Pide el CSV de Google Sheets con NetworkFirst: en línea usa los datos nuevos y, sin conexión, la última copia guardada
+- Guarda las fuentes de Google en caché para repetirlas offline
+- Se actualiza solo (`autoUpdate`) y borra las cachés viejas del worker anterior (`footgolf-cache-*`)
 
 ## Contribuir
 

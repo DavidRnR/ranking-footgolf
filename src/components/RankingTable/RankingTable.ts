@@ -1,7 +1,10 @@
 import { RankingChange } from '@components/RankingChange/RankingChange';
 import { Player } from '@models/player';
+import { formatPlayerField } from '@utils/formatPlayer';
 import { adoptStyles } from '@utils/styles';
 import rankingTableStyle from './rankingTable.css?inline';
+
+type RankingColumnKey = Exclude<keyof Player, 'columns' | 'lastUpdate'>;
 
 const $rankingTableTemplate = document.createElement('template');
 
@@ -23,9 +26,9 @@ $rankingTableTemplate.innerHTML = `
 
 export class RankingTable extends HTMLElement {
   allRows: Player[] = [];
-  tableHeader: HTMLTableSectionElement;
+  tableHeader: HTMLTableRowElement;
   tableBody: HTMLTableSectionElement;
-  tableConfig: { headers: string[]; columns: { key: string; index: number; className?: string }[] };
+  tableConfig: { headers: string[]; columns: { key: RankingColumnKey; index: number; className?: string }[] };
 
   constructor() {
     super();
@@ -33,7 +36,7 @@ export class RankingTable extends HTMLElement {
     adoptStyles(this.shadowRoot!, rankingTableStyle);
     this.shadowRoot!.appendChild($rankingTableTemplate.content.cloneNode(true));
 
-    this.tableHeader = this.shadowRoot!.getElementById('table-header') as HTMLTableSectionElement;
+    this.tableHeader = this.shadowRoot!.getElementById('table-header') as HTMLTableRowElement;
     this.tableBody = this.shadowRoot!.getElementById('table-body') as HTMLTableSectionElement;
 
     this.tableConfig = {
@@ -70,7 +73,10 @@ export class RankingTable extends HTMLElement {
       if (header === '') {
         // Empty header for changes column - add aria-label for accessibility
         th.setAttribute('aria-label', 'Cambio de posición');
-        th.innerHTML = '<span class="sr-only">Cambio</span>';
+        const hiddenLabel = document.createElement('span');
+        hiddenLabel.className = 'sr-only';
+        hiddenLabel.textContent = 'Cambio';
+        th.append(hiddenLabel);
       } else {
         th.textContent = header;
       }
@@ -83,14 +89,13 @@ export class RankingTable extends HTMLElement {
     const td = document.createElement('td');
     td.colSpan = this.tableConfig.headers.length;
     td.style.textAlign = 'center';
-    td.innerHTML = '<app-no-results></app-no-results>';
+    td.append(document.createElement('app-no-results'));
     tr.appendChild(td);
-    this.tableBody.innerHTML = '';
-    this.tableBody.appendChild(tr);
+    this.tableBody.replaceChildren(tr);
   }
 
   renderTableRows(rowsPlayers: Player[]) {
-    this.tableBody.innerHTML = ''; // Clear existing content
+    this.tableBody.replaceChildren();
 
     if (rowsPlayers.length === 0) {
       this.renderNoResults();
@@ -112,7 +117,7 @@ export class RankingTable extends HTMLElement {
           rankingChange.value = player.changes;
           divContent.appendChild(rankingChange);
         } else {
-          divContent.textContent = player[column.key as keyof Player].toString();
+          divContent.textContent = formatPlayerField(column.key, player[column.key]);
         }
 
         if (column.className) {
@@ -128,8 +133,14 @@ export class RankingTable extends HTMLElement {
   }
 
   filterPlayers(searchTerm: string) {
+    if (!searchTerm) {
+      this.renderTableRows(this.allRows);
+      return;
+    }
+
+    const normalizedTerm = searchTerm.toLowerCase();
     const filteredRows = this.allRows.filter((player) =>
-      player.columns.some((column) => column.toLowerCase().includes(searchTerm.toLowerCase())),
+      player.columns.some((column) => column.toLowerCase().includes(normalizedTerm)),
     );
     this.renderTableRows(filteredRows);
   }

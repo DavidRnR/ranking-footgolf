@@ -59,15 +59,8 @@ export class ThemeMode extends HTMLElement {
     this.sunIcon = this.shadowRoot!.querySelector('.sun-icon') as SVGSVGElement;
     this.moonIcon = this.shadowRoot!.querySelector('.moon-icon') as SVGSVGElement;
 
-    // Set initial icon visibility
-    this.updateIcons();
-
-    // Add click event listener
     themeToggle.addEventListener('click', () => {
-      // Dispatch custom event
       this.dispatchEvent(new CustomEvent('themeChange'));
-      // Update icons after theme change
-      this.updateIcons();
     });
   }
 
@@ -88,19 +81,16 @@ export class ThemeMode extends HTMLElement {
     const savedTheme = localStorage.getItem('theme');
     const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
 
-    // Set initial theme
+    // Set initial theme, then match the icons to the class that is actually applied.
     document.body.classList.add(initialTheme);
+    this.updateIcons();
 
-    // Listen for theme changes from the web component
     this.addEventListener('themeChange', () => {
       const newTheme = document.body.classList.contains('dark') ? 'light' : 'dark';
-      // Use requestAnimationFrame for smoother transition
-      requestAnimationFrame(() => {
-        document.body.classList.toggle('dark');
-        document.body.classList.toggle('light');
-        // Save theme preference to localStorage
-        localStorage.setItem('theme', newTheme);
-      });
+      document.body.classList.toggle('dark');
+      document.body.classList.toggle('light');
+      localStorage.setItem('theme', newTheme);
+      this.updateIcons();
     });
   }
 }

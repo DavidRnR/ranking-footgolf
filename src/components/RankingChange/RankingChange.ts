@@ -14,8 +14,8 @@ export class RankingChange extends HTMLElement {
     return this._value;
   }
 
-  set value(newValue: number) {
-    this._value = newValue;
+  set value(newValue: number | null) {
+    this._value = newValue ?? 0;
     this.render();
   }
 

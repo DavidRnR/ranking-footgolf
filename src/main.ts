@@ -16,12 +16,17 @@ import { Player } from './models/player';
 import { getRanking } from './services/rankingService';
 
 let ranking: Player[] = [];
+let rankingReady = false;
+let loading = false;
 const $container = document.querySelector('.container') as HTMLDivElement;
-let $tableComponent: RankingTable;
-let $rankingComponent = document.querySelector('app-ranking') as Ranking;
 const $lastUpdateElement = document.querySelector('.last-update');
 const $switchViewComponent = document.querySelector('app-switch-view') as SwitchView;
 const $searchComponent = document.querySelector('app-search') as Search;
+
+// Matches the breakpoint in responsive.css, where the table and the view switch are hidden.
+// The list/table choice stays in memory. Only `?search=` is in the URL: on a phone the
+// table is hidden, and a view param would make Back toggle layout instead of leaving.
+const NARROW_LIST_QUERY = '(max-width: 1366px)';
 
 function initTheme() {
   console.log('Initializing theme...');
@@ -29,112 +34,139 @@ function initTheme() {
   themeMode.initTheme();
 }
 
-function showTableView(searchTerm: string, existingTable: Element | null, existingList: Element | null) {
-  // Remove list if exists
-  if (existingList) {
-    existingList.remove();
-  }
-
-  // Create and initialize table if it doesn't exist
-  if (!existingTable) {
-    $tableComponent = document.createElement('app-ranking-table') as RankingTable;
-    $tableComponent.generateTableHeaders();
-    $tableComponent.setRows(ranking);
-    if (searchTerm) {
-      $tableComponent.filterPlayers(searchTerm);
-    }
-    $container.appendChild($tableComponent);
-  }
+function currentSearchTerm(): string {
+  return $searchComponent.searchTerm.toLowerCase();
 }
 
-function showListView(searchTerm: string, existingTable: Element | null, existingList: Element | null) {
-  // Remove table if exists
-  if (existingTable) {
-    existingTable.remove();
+/** Below 1366px only the list is usable, but the switch still remembers the user's choice. */
+function visibleView(): RankingView {
+  if (window.matchMedia(NARROW_LIST_QUERY).matches) {
+    return RankingView.LIST;
   }
 
-  // Create and initialize list if it doesn't exist
-  if (!existingList) {
-    $rankingComponent = document.createElement('app-ranking') as Ranking;
-    $rankingComponent.setPlayers(ranking);
-    if (searchTerm) {
-      $rankingComponent.filterPlayers(searchTerm);
-    }
-    $container.appendChild($rankingComponent);
-  }
+  return $switchViewComponent.currentView;
 }
 
-function handleChangeView(view: RankingView) {
-  const existingTable = $container.querySelector('app-ranking-table');
-  const existingList = $container.querySelector('app-ranking');
+function mountList(): Ranking {
+  $container.querySelector('app-ranking-table')?.remove();
 
-  const searchTerm = $searchComponent.getSearchTerm();
+  let list = $container.querySelector('app-ranking') as Ranking | null;
+  if (!list) {
+    list = document.createElement('app-ranking') as Ranking;
+    $container.append(list);
+  }
 
-  if (view === RankingView.TABLE) {
-    showTableView(searchTerm, existingTable, existingList);
+  return list;
+}
+
+function mountTable(): RankingTable {
+  $container.querySelector('app-ranking')?.remove();
+
+  let table = $container.querySelector('app-ranking-table') as RankingTable | null;
+  if (!table) {
+    table = document.createElement('app-ranking-table') as RankingTable;
+    table.generateTableHeaders();
+    table.setRows(ranking);
+    $container.append(table);
+  }
+
+  return table;
+}
+
+function renderVisibleView() {
+  const searchTerm = currentSearchTerm();
+
+  if (visibleView() === RankingView.TABLE) {
+    mountTable().filterPlayers(searchTerm);
     return;
   }
 
-  showListView(searchTerm, existingTable, existingList);
+  const list = mountList();
+  list.setPlayers(ranking);
+  list.filterPlayers(searchTerm);
+}
+
+function filterVisibleView(searchTerm: string) {
+  if (!rankingReady) {
+    return;
+  }
+
+  if (visibleView() === RankingView.TABLE) {
+    const table = $container.querySelector('app-ranking-table') as RankingTable | null;
+    (table ?? mountTable()).filterPlayers(searchTerm);
+    return;
+  }
+
+  let list = $container.querySelector('app-ranking') as Ranking | null;
+  if (!list) {
+    list = mountList();
+    list.setPlayers(ranking);
+  }
+
+  list.filterPlayers(searchTerm);
 }
 
 async function loadRanking() {
-  try {
-    $rankingComponent.showSkeleton();
+  if (loading) {
+    return;
+  }
 
+  loading = true;
+  const list = mountList();
+  list.showSkeleton();
+
+  try {
     const { ranking: rankingData, lastUpdate } = await getRanking();
     ranking = rankingData;
 
-    $lastUpdateElement!.textContent = `Última actualización: ${lastUpdate || 'No disponible'}`;
-
-    const searchTerm = $searchComponent.getSearchTerm();
-
-    $switchViewComponent.addEventListener('viewChange', ((e: CustomEvent<{ view: RankingView }>) => {
-      handleChangeView(e.detail.view);
-    }) as EventListener);
-
-    $rankingComponent.setPlayers(ranking);
-
-    if (searchTerm) {
-      $rankingComponent.filterPlayers(searchTerm);
+    if ($lastUpdateElement) {
+      $lastUpdateElement.textContent = `Última actualización: ${lastUpdate || 'No disponible'}`;
     }
 
-    $searchComponent.addEventListener('search', ((e: CustomEvent<{ searchTerm: string }>) => {
-      const activeView = $switchViewComponent.currentView === 'table' ? $tableComponent : $rankingComponent;
-      activeView.filterPlayers?.(e.detail.searchTerm);
-    }) as EventListener);
-
+    rankingReady = true;
+    renderVisibleView();
     console.log('CSV data loaded successfully');
   } catch (error) {
     console.error('Error loading CSV:', error);
+    rankingReady = false;
+
+    if ($lastUpdateElement) {
+      $lastUpdateElement.textContent = 'Última actualización: No disponible';
+    }
+
+    mountList().showError(() => {
+      void loadRanking();
+    });
+  } finally {
+    loading = false;
   }
 }
-
-// Register Service Worker
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    // The service worker will be built with the correct base path
-    navigator.serviceWorker
-      .register('./sw.js')
-      .then(() => {
-        console.log('ServiceWorker registration successful');
-      })
-      .catch((err) => {
-        console.log('ServiceWorker registration failed: ', err);
-      });
-  });
-}
-
-// Add resize listener to handle window size changes
-window.addEventListener('resize', () => {
-  const view = window.innerWidth < 1366 ? RankingView.LIST : $switchViewComponent.currentView;
-  $switchViewComponent.switchView(view as RankingView);
-});
 
 function initializeApp() {
   console.log('Initializing application...');
   initTheme();
-  loadRanking();
+
+  $switchViewComponent.addEventListener('viewChange', () => {
+    if (!rankingReady) {
+      return;
+    }
+
+    renderVisibleView();
+  });
+
+  $searchComponent.addEventListener('search', ((event: CustomEvent<{ searchTerm: string }>) => {
+    filterVisibleView(event.detail.searchTerm);
+  }) as EventListener);
+
+  window.matchMedia(NARROW_LIST_QUERY).addEventListener('change', () => {
+    if (!rankingReady) {
+      return;
+    }
+
+    renderVisibleView();
+  });
+
+  void loadRanking();
   console.log('Application initialized');
 }
 
