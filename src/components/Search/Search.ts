@@ -57,7 +57,7 @@ export class Search extends HTMLElement {
 
   // Function to debounce search input
   debounce(func: (...args: unknown[]) => void, wait: number) {
-    let timeout: NodeJS.Timeout;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
     return function executedFunction(...args: unknown[]) {
       const later = () => {
         clearTimeout(timeout);

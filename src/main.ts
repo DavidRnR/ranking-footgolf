@@ -140,21 +140,6 @@ async function loadRanking() {
   }
 }
 
-// Register Service Worker
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    // The service worker will be built with the correct base path
-    navigator.serviceWorker
-      .register('./sw.js')
-      .then(() => {
-        console.log('ServiceWorker registration successful');
-      })
-      .catch((err) => {
-        console.log('ServiceWorker registration failed: ', err);
-      });
-  });
-}
-
 function initializeApp() {
   console.log('Initializing application...');
   initTheme();

@@ -33,7 +33,6 @@
   .accordion,
   .accordion-header {
     border-radius: 1em;
-    /* eslint-disable-next-line css/no-invalid-properties */
     corner-shape: squircle;
   }
 }
