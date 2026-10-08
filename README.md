@@ -34,7 +34,13 @@ Una Aplicación Web Progresiva (PWA) que muestra y gestiona el ranking nacional 
 
 ## Despliegue
 
-La aplicación se despliega automáticamente a GitHub Pages cuando se hace push a la rama `main`.
+La aplicación se publica en [GitHub Pages](https://davidrnr.github.io/ranking-footgolf/) con el workflow `.github/workflows/deploy.yml`.
+
+- Un push a `main` despliega el sitio. Esa es la rama de publicación a largo plazo.
+- Hasta que `feature/vite_ts` se fusione en `main`, un push a `feature/vite_ts` también despliega, para que el sitio en producción siga actualizándose.
+- Los pull requests hacia `main` o `feature/vite_ts` ejecutan la comprobación de tipos, el lint y el build, y no despliegan.
+
+Cuando `feature/vite_ts` ya no haga falta, hay que quitarla de `on.push.branches` y de la condición del job `deploy`.
 
 ### Despliegue Manual
 

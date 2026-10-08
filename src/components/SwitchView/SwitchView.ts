@@ -28,7 +28,7 @@ $switchViewTemplate.innerHTML = `
 
 export class SwitchView extends HTMLElement {
   buttons: NodeListOf<HTMLButtonElement>;
-  currentView: string;
+  currentView: RankingView;
 
   constructor() {
     super();

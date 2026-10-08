@@ -1,15 +1,15 @@
 {
   "name": "ranking-footgolf",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Desarrollado por David Martín - carlosdavidmartin@gmail.com",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --ext .js,.ts",
     "format": "prettier --write .",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsc -b",
     "dev": "vite",
-    "build": "tsc && vite build && echo 'Build completed successfully!'",
+    "build": "tsc -b && vite build && echo 'Build completed successfully!'",
     "preview": "vite preview"
   },
   "keywords": [],
@@ -17,18 +17,18 @@
   "license": "ISC",
   "devDependencies": {
     "@eslint/css": "0.14.1",
-    "@eslint/js": "9.39.2",
+    "@eslint/js": "9.39.5",
     "@eslint/json": "0.14.0",
     "@types/node": "25.0.10",
-    "eslint": "9.39.2",
+    "eslint": "9.39.5",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-import": "2.32.0",
     "eslint-plugin-prettier": "5.5.5",
     "globals": "17.1.0",
     "prettier": "3.8.1",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.53.1",
-    "vite": "7.3.1",
+    "typescript-eslint": "8.71.1",
+    "vite": "7.3.7",
     "vite-tsconfig-paths": "^6.0.5"
   }
 }

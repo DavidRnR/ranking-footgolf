@@ -2,9 +2,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [feature/vite_ts]
+    branches: [main, feature/vite_ts]
   pull_request:
-    branches: [feature/vite_ts]
+    branches: [main, feature/vite_ts]
 
 permissions:
   contents: read
@@ -54,7 +54,9 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/feature/vite_ts'
+    # main is the long-term publish branch. feature/vite_ts keeps deploying until it
+    # is merged, so the live site does not go stale in the meantime. Pull requests never deploy.
+    if: github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'feature/vite_ts')
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
