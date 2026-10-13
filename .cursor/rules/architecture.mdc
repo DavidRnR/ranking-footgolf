@@ -1,0 +1,18 @@
+---
+description: Data flow, view state, and module boundaries for ranking-footgolf
+alwaysApply: true
+---
+
+# Architecture
+
+`src/main.ts` calls `getRanking()`, keeps the `Player[]`, and mounts either `app-ranking` (list) or `app-ranking-table`. That file is the only owner of the visible view.
+
+- `parseRankingCsv` maps the sheet through `HEADERS` onto `Player`. Empty numeric cells are `null`. `player.columns` is the raw trimmed row and is what search matches, case-insensitive.
+- Display values go through `formatPlayerField`. Decimal fields are `points`, `card15`, `card16`, and `pointsLost` (`toFixed(2)`).
+- `app-search` emits `search`. `app-switch-view` emits `viewChange`. Both are composed custom events. `main.ts` listens and calls `filterPlayers` or `renderVisibleView`.
+- `SearchHistory` decides `push`, `replace`, `discard`, or `none`. A typing burst pushes once, then replaces until a 300ms pause. Clearing or Enter commits immediately.
+- Below `(max-width: 1366px)`, `visibleView()` returns the list even when the switch still remembers table.
+
+Parsing and history logic live in `src/services` or `src/utils` with a colocated `*.test.ts`. Vitest runs in Node. Components are not unit-tested.
+
+The sheet request is NetworkFirst (`ranking-sheet` in `vite.config.ts`). `navigateFallbackAllowlist` and `ignoreURLParametersMatching` include `search`, matching `APP_SHELL_NAVIGATION` in `searchHistory.ts`. Change those together.

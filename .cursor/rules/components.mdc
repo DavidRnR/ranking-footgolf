@@ -1,0 +1,33 @@
+---
+description: Web component structure, events, and registration
+globs: src/components/**/*.ts
+alwaysApply: false
+---
+
+# Components
+
+One folder per element: `src/components/<Name>/<Name>.ts` and a colocated CSS file. Register it with a side-effect import at the top of `src/main.ts`. Static shell tags also go in `src/index.html`. List and table nodes are created in `main.ts`.
+
+- Extend `HTMLElement`. In the constructor: `attachShadow({ mode: 'open' })`, `adoptStyles(this.shadowRoot!, styles)`, then clone a module-level `<template>`.
+- Import CSS as `import style from './name.css?inline'`.
+- Define the tag as `app-` plus kebab-case: `globalThis.customElements.define('app-example', Example)`.
+- Events listened to from outside the shadow root use `bubbles: true` and `composed: true`.
+- Render `Player` data with `createElement`, `append`, and `replaceChildren`. Format cells with `formatPlayerField`.
+- Empty matches render `<app-no-results>`. Position deltas use `<app-ranking-change>` and its `value` setter.
+- Accordion content is slotted: `collapsed` and `expanded`.
+
+```ts
+const $template = document.createElement('template');
+$template.innerHTML = `<div class="example"></div>`;
+
+export class Example extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+    adoptStyles(this.shadowRoot!, exampleStyle);
+    this.shadowRoot!.append($template.content.cloneNode(true));
+  }
+}
+
+globalThis.customElements.define('app-example', Example);
+```

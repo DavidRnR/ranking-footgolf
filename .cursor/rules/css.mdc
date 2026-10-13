@@ -1,0 +1,18 @@
+---
+description: Design tokens, shadow CSS, and layout breakpoints
+globs: "**/*.css"
+alwaysApply: false
+---
+
+# CSS
+
+Tokens live on `:root` in `src/css/base.css` and use `light-dark()`. `body.light` and `body.dark` set `color-scheme`, so those tokens follow the theme toggle. Component CSS is adopted into a shadow root: it can read the variables and cannot style the light DOM.
+
+Use the existing variables before adding a color: `--color-bg`, `--color-text`, `--color-primary`, `--color-border`, `--color-table-bg`, `--color-table-hover`, `--color-table-header`, `--color-striped`, `--color-alternate`, `--color-success`, `--color-danger`, plus `--app-font` and `--transition-duration`. New tokens go in `base.css`.
+
+- Spacing uses `em`. Use `rem` when the size should stay independent of the parent font.
+- `prefers-reduced-motion: reduce` sets `transition` and `animation` to `none`.
+- Focus rings use `outline: 2px solid var(--color-primary)`.
+- `.sr-only` is copied into the component file. The light-DOM version does not cross the shadow boundary.
+- `1366px` hides `.switch-view-container` and `app-ranking-table`. `1024px` is the compact header and logo size. Match those queries.
+- Squircle corners stay inside `@supports (corner-shape: squircle)`.
